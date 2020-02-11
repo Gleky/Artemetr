@@ -25,16 +25,21 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
+        camera.cpp \
+        comport.cpp \
         main.cpp \
         mainwindow.cpp \
-        point.cpp
+        transpoint.cpp
 
 HEADERS += \
-        ICamera.h \
-        IComPort.h \
-        Observer.h \
+        camera.h \
+        comport.h \
+        icamera.h \
+        icomport.h \
         mainwindow.h \
-        point.h
+        observer.h \
+        point.h \
+        transpoint.h
 
 FORMS += \
         mainwindow.ui

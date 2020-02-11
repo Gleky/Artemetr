@@ -1,11 +1,12 @@
 #pragma once
 
 #include <string>
+#include "observer.h"
 
-class IComPort
+class IComPort : public Publisher
 {
+public:
     virtual void sendMessage(std::string);
-    virtual void readMessage();
+    virtual std::string readMessage();
     virtual ~IComPort();
-
 };

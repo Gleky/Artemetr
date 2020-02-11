@@ -32,3 +32,12 @@
 *.app
 MovingCam.pro.user.2bdece6
 MovingCam.pro.user
+Makefile
+Makefile.Debug
+Makefile.Release
+debug/moc_mainwindow.cpp
+debug/moc_predefs.h
+debug/MovingCam.pdb
+debug/MovingCam.vc.pdb
+ui_mainwindow.h
+.qmake.stash
