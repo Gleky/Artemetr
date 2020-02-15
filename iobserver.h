@@ -1,15 +1,18 @@
 #pragma once
 
-#include <string>
 #include <list>
 using namespace std;
+
+
 
 class Subscriber
 {
 public:
-    virtual ~Subscriber();
+    virtual ~Subscriber() {}
     virtual void update() = 0;
 };
+
+
 
 class Publisher
 {
@@ -24,7 +27,7 @@ public:
     }
 
 protected:
-    void notifySubscribers()
+    void notifySubscribers() const
     {
         for (auto sub : _subscribers)
             sub->update();

@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui serialport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -36,8 +36,9 @@ HEADERS += \
         comport.h \
         icamera.h \
         icomport.h \
+        iobserver.h \
+        irobot.h \
         mainwindow.h \
-        observer.h \
         point.h \
         transpoint.h
 

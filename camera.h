@@ -3,6 +3,8 @@
 
 #include "icamera.h"
 #include "transpoint.h"
+#include "point.h"
+#include <QMutex>
 
 
 class Camera : public ICamera
@@ -13,18 +15,20 @@ public:
     void move(Point newPos) override;
     void moveX(int x) override;
     void moveY(int y) override;
-    int currentX() override;
-    int currentY() override;
-    Point currentPos() override;
+    int currentX() const override;
+    int currentY() const override;
+    Point currentPos() const override;
 
     void update() override;
-    void setComPort(IComPort *port) override;
+    void setComPort(IComPort *port);
 
 private:
-    TransPoint _currentPosition;
-    TransPoint _targetPosition;
+    Point _currentPosition;
+    Point _targetPosition;
 
-    IComPort *_port;
+    mutable QMutex mutex ;
+
+    IComPort *_port = nullptr;
 };
 
 #endif // CAMERA_H

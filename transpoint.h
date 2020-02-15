@@ -1,19 +1,22 @@
 #pragma once
 
 #include <string>
-#include "point.h"
+
+struct Point;
+
 
 class TransPoint
 {
 public:
-    TransPoint();
-    bool operator == (TransPoint &anotherPoint);
-    void operator = (Point& point);
 
-    std::string convertToMessage();
-    static TransPoint convertToPoint(std::string message);
+//    bool operator == (TransPoint &anotherPoint);
+//    void operator = (Point& point);
+
+    static char *convertToMessage(const Point point);
+    static Point *convertToPoint(const char *message);
 
 private:
-    Point point;
+    TransPoint();
+    TransPoint(TransPoint &);
 };
 

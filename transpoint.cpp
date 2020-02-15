@@ -1,26 +1,23 @@
 #include "transpoint.h"
+#include "point.h"
 
-TransPoint::TransPoint()
+#include <QString>
+#include <QStringList>
+#include <QDebug>
+
+
+char *TransPoint::convertToMessage(const Point point)
 {
-
+    return nullptr;
 }
 
-bool TransPoint::operator ==(TransPoint &anotherPoint)
+Point *TransPoint::convertToPoint( const char *message)
 {
-
-}
-
-void TransPoint::operator =(Point &point)
-{
-
-}
-
-std::string TransPoint::convertToMessage()
-{
-
-}
-
-TransPoint TransPoint::convertToPoint(std::string message)
-{
-
+    QString msg(message);
+    qDebug() << msg;
+    QStringList messageParts = msg.split(' ');
+    if (messageParts.size() > 2 && messageParts[0] == "NEW_POS"){
+        return new Point{3,5};
+    }
+    return nullptr;
 }

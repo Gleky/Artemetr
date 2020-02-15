@@ -1,6 +1,6 @@
 #pragma once
 
-#include "observer.h"
+#include "iobserver.h"
 
 struct Point;
 class IComPort;
@@ -11,9 +11,7 @@ public:
     virtual void move( Point newPos ) = 0;
     virtual void moveX( int x ) = 0;
     virtual void moveY( int y ) = 0;
-    virtual int currentX() = 0;
-    virtual int currentY() = 0;
-    virtual Point currentPos() = 0;
-
-    virtual void setComPort(IComPort *port) = 0;
+    virtual int currentX() const = 0;
+    virtual int currentY() const = 0;
+    virtual Point currentPos() const = 0;
 };
