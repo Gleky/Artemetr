@@ -41,3 +41,6 @@ debug/MovingCam.pdb
 debug/MovingCam.vc.pdb
 ui_mainwindow.h
 .qmake.stash
+debug/MovingCam.ilk
+debug/MovingCam.ilk
+*.ilk

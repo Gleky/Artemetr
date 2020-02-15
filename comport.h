@@ -2,6 +2,8 @@
 
 #include <QObject>
 #include <QByteArray>
+#include <QSerialPort>
+#include <QTimer>
 
 #include "icomport.h"
 
@@ -16,12 +18,17 @@ public:
 
 private slots:
     void messageReceived();
+    void portDisconnected();
+    void tryConnect();
 
 private:
-    void tryConnect();
-    bool isConnected = false;
+    void connectPort(QSerialPort *port);
 
-    QSerialPort *_port;
+    QTimer _connectTimer;
+
+    QSerialPort *_port = nullptr;
     QByteArray _lastMessage;
+
+    QList<QSerialPort *> _availablePorts;
 };
 

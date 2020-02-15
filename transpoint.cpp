@@ -14,10 +14,15 @@ char *TransPoint::convertToMessage(const Point point)
 Point *TransPoint::convertToPoint( const char *message)
 {
     QString msg(message);
-    qDebug() << msg;
     QStringList messageParts = msg.split(' ');
+
     if (messageParts.size() > 2 && messageParts[0] == "NEW_POS"){
-        return new Point{3,5};
+        bool parsOkX = false;
+        bool parsOkY = false;
+        int x = messageParts[1].toInt(&parsOkX),
+            y = messageParts[2].toInt(&parsOkY);
+        if (parsOkX && parsOkY)
+            return new Point{x,y};
     }
     return nullptr;
 }

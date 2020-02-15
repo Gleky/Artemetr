@@ -1,12 +1,14 @@
 #include "comport.h"
 
 #include <QSerialPortInfo>
-#include <QSerialPort>
 #include <QDebug>
 
 
 ComPort::ComPort()
 {
+    connect(&_connectTimer, &QTimer::timeout, this, &ComPort::tryConnect);
+    _connectTimer.setInterval(5000);
+    _connectTimer.start();
     tryConnect();
 }
 
@@ -22,22 +24,65 @@ const char *ComPort::readMessage()
 
 void ComPort::messageReceived()
 {
-    _lastMessage = _port->readLine();
-    notifySubscribers();
+    if (_port == nullptr) {
+        auto port = dynamic_cast<QSerialPort *>(sender());
+        connectPort(port);
+    } else {
+        if (_lastMessage.contains("MOVING_CAM")){
+            portDisconnected();
+            return;
+        }
+        _lastMessage = _port->readLine();
+        notifySubscribers();
+    }
+}
+
+void ComPort::portDisconnected(/*QSerialPort::SerialPortError error*/)
+{
+    qDebug() << "Disconnected! =(";
+    if (_port != nullptr) {
+        _port->close();
+        _port->deleteLater();
+        _port = nullptr;
+    }
+    _connectTimer.start();
+    _lastMessage.clear();
 }
 
 void ComPort::tryConnect()
 {
+    if (_availablePorts.size() > 0) {
+        for (auto port : _availablePorts){
+            port->close();
+            delete port;
+        }
+        _availablePorts.clear();
+    }
+
     auto ports = QSerialPortInfo::availablePorts();
     for (auto port : ports) {
-        qDebug() << port.portName();
-//        qDebug() << port.description();
-//        qDebug() << port.manufacturer();
-//        qDebug() << port.vendorIdentifier();
-//        qDebug() << port.serialNumber();
-//        qDebug() << port.productIdentifier();
-        _port = new QSerialPort(port);
-        _port->open(QIODevice::ReadWrite);
-        connect(_port, &QSerialPort::readyRead, this, &ComPort::messageReceived);
+        auto tryPort = new QSerialPort(port);
+        _availablePorts.append(tryPort);
+        connect(tryPort, &QSerialPort::readyRead, this, &ComPort::messageReceived);
+        tryPort->open(QIODevice::ReadWrite);
+    }
+}
+
+void ComPort::connectPort(QSerialPort *port)
+{
+    QString read(port->readLine());
+    if (read.contains("MOVING_CAM"))
+        port->write("CONNECT_TO_MOVING_CAM");
+    else if (read.contains("CONNECTION_SUCCESS")) {
+        _port = port;
+        qDebug() << "Connected! =)";
+        _connectTimer.stop();
+        connect(_port, &QSerialPort::errorOccurred, this, &ComPort::portDisconnected);
+        for (auto prt : _availablePorts)
+            if (prt != _port) {
+                prt->close();
+                delete prt;
+            }
+        _availablePorts.clear();
     }
 }

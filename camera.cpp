@@ -3,6 +3,7 @@
 #include "transpoint.h"
 
 #include <QString>
+#include <QDebug>
 
 Camera::Camera()
 {
@@ -47,6 +48,7 @@ void Camera::update()
         if (newPosition != nullptr) {
             _currentPosition = *newPosition;
             delete newPosition;
+            qDebug() << _currentPosition.X << ' ' << _currentPosition.Y;
         }
     }
 }
