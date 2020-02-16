@@ -38,6 +38,7 @@ HEADERS += \
         icomport.h \
         iobserver.h \
         irobot.h \
+        keywords.h \
         mainwindow.h \
         point.h \
         transpoint.h

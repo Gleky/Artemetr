@@ -1,4 +1,5 @@
 #include "comport.h"
+#include "keywords.h"
 
 #include <QSerialPortInfo>
 #include <QDebug>
@@ -28,7 +29,7 @@ void ComPort::messageReceived()
         auto port = dynamic_cast<QSerialPort *>(sender());
         connectPort(port);
     } else {
-        if (_lastMessage.contains("MOVING_CAM")){
+        if (_lastMessage.contains(movingCamId)){
             portDisconnected();
             return;
         }
@@ -64,6 +65,7 @@ void ComPort::tryConnect()
         auto tryPort = new QSerialPort(port);
         _availablePorts.append(tryPort);
         connect(tryPort, &QSerialPort::readyRead, this, &ComPort::messageReceived);
+        tryPort->setBaudRate(connnectionSpeed);
         tryPort->open(QIODevice::ReadWrite);
     }
 }
@@ -71,9 +73,9 @@ void ComPort::tryConnect()
 void ComPort::connectPort(QSerialPort *port)
 {
     QString read(port->readLine());
-    if (read.contains("MOVING_CAM"))
-        port->write("CONNECT_TO_MOVING_CAM");
-    else if (read.contains("CONNECTION_SUCCESS")) {
+    if (read.contains(movingCamId))
+        port->write(connectRequest);
+    else if (read.contains(connectApprove)) {
         _port = port;
         qDebug() << "Connected! =)";
         _connectTimer.stop();
