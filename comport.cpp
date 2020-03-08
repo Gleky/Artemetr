@@ -4,6 +4,7 @@
 #include <QSerialPortInfo>
 #include <QDebug>
 
+namespace PC {
 
 ComPort::ComPort()
 {
@@ -13,7 +14,7 @@ ComPort::ComPort()
     tryConnect();
 }
 
-void ComPort::sendMessage(char *)
+void ComPort::sendMessage(const char *)
 {
 
 }
@@ -87,4 +88,6 @@ void ComPort::connectPort(QSerialPort *port)
             }
         _availablePorts.clear();
     }
+}
+
 }

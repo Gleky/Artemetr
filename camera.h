@@ -2,10 +2,12 @@
 #define CAMERA_H
 
 #include "icamera.h"
-#include "transpoint.h"
 #include "point.h"
 #include <QMutex>
 
+class IComPort;
+
+namespace PC {
 
 class Camera : public ICamera
 {
@@ -31,4 +33,5 @@ private:
     IComPort *_port = nullptr;
 };
 
+}
 #endif // CAMERA_H

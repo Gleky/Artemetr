@@ -1,9 +1,15 @@
 #include "camera.h"
 #include "icomport.h"
-#include "transpoint.h"
 
 #include <QString>
 #include <QDebug>
+
+
+namespace PC {
+
+char *convertToMessage(const Point point);
+Point *convertToPoint( const char *message);
+
 
 Camera::Camera()
 {
@@ -44,7 +50,7 @@ void Camera::update()
 {
     if (_port != nullptr) {
         const char *message = _port->readMessage();
-        Point *newPosition = TransPoint::convertToPoint(message);
+        Point *newPosition = convertToPoint(message);
         if (newPosition != nullptr) {
             _currentPosition = *newPosition;
             delete newPosition;
@@ -57,3 +63,32 @@ void Camera::setComPort(IComPort *port)
 {
     _port = port;
 }
+
+
+/////////////////// -- Converting -- ///////////////////////////
+
+char *convertToMessage(const Point point)
+{
+    return nullptr;
+}
+
+Point *convertToPoint( const char *message)
+{
+    QString msg(message);
+    QStringList messageParts = msg.split(' ');
+
+    if (messageParts.size() >= 3 && messageParts[0] == "NEW_POS"){
+        bool xParsOk = false;
+        bool yParsOk = false;
+        int x = messageParts[1].toInt(&xParsOk),
+            y = messageParts[2].toInt(&yParsOk);
+        if (xParsOk && yParsOk)
+            return new Point{x,y};
+    }
+    return nullptr;
+}
+
+}
+
+
+

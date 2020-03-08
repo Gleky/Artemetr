@@ -4,6 +4,8 @@
 #include "camera.h"
 #include "comport.h"
 
+using namespace PC;
+
 int main(int argc, char *argv[])
 {
   QApplication a(argc, argv);

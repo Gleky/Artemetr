@@ -1,6 +1,4 @@
 #pragma once
-#include <stdint.h>
-
 
 #define connnectionSpeed 115200
 
@@ -10,4 +8,5 @@
 
 
 //Command names
-//#define
+#define currentPosition "CURRENT_POS"
+#define moveTo "MOVE"

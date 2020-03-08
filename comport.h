@@ -9,12 +9,14 @@
 
 class QSerialPort;
 
+namespace PC {
+
 class ComPort : public IComPort, public QObject
 {
 public:
     ComPort();
 
-    void sendMessage(char *) override;
+    void sendMessage(const char *) override;
     const char *readMessage() override;
 
 private slots:
@@ -33,3 +35,4 @@ private:
     QList<QSerialPort *> _availablePorts;
 };
 
+}

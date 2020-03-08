@@ -3,7 +3,6 @@
 #include "iobserver.h"
 
 struct Point;
-class IComPort;
 
 class ICamera : public Publisher, public Subscriber
 {

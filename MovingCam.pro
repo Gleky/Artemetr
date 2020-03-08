@@ -28,23 +28,23 @@ SOURCES += \
         camera.cpp \
         comport.cpp \
         main.cpp \
-        mainwindow.cpp \
-        transpoint.cpp
+        mainwindow.cpp
 
 HEADERS += \
         camera.h \
         comport.h \
-        icamera.h \
-        icomport.h \
-        iobserver.h \
-        irobot.h \
-        keywords.h \
+        common/icamera.h \
+        common/icomport.h \
+        common/iobserver.h \
+        common/irobot.h \
+        common/keywords.h \
         mainwindow.h \
-        point.h \
-        transpoint.h
+        common/point.h
 
 FORMS += \
         mainwindow.ui
+
+INCLUDEPATH += common/
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
