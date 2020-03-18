@@ -36,5 +36,5 @@ protected:
     }
 
 private:
-    Subscriber *_subscribers[3];
+    Subscriber *_subscribers[3] = {0};
 };

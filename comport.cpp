@@ -14,9 +14,17 @@ ComPort::ComPort()
     tryConnect();
 }
 
+ComPort::~ComPort()
+{
+    if ( _port != nullptr ) {
+        _port->close();
+        _port->deleteLater();
+    }
+}
+
 void ComPort::sendMessage(const char *)
 {
-
+    // NEED CODE
 }
 
 const char *ComPort::readMessage()

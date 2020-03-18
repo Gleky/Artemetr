@@ -15,6 +15,7 @@ class ComPort : public IComPort, public QObject
 {
 public:
     ComPort();
+    ~ComPort();
 
     void sendMessage(const char *) override;
     const char *readMessage() override;

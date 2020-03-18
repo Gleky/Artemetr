@@ -1,5 +1,6 @@
 #include "camera.h"
 #include "icomport.h"
+#include "keywords.h"
 
 #include <QString>
 #include <QDebug>
@@ -7,7 +8,7 @@
 
 namespace PC {
 
-char *convertToMessage(const Point point);
+QString convertToMessage(const Point point);
 Point *convertToPoint( const char *message);
 
 
@@ -18,7 +19,8 @@ Camera::Camera()
 
 void Camera::move(Point newPos)
 {
-
+    auto message = convertToMessage(newPos);
+    _port->sendMessage( message.toStdString().c_str() );
 }
 
 void Camera::moveX(int x)
@@ -55,6 +57,7 @@ void Camera::updateSub()
             _currentPosition = *newPosition;
             delete newPosition;
             qDebug() << _currentPosition.X << ' ' << _currentPosition.Y;
+            notifySubscribers();
         }
     }
 }
@@ -67,9 +70,10 @@ void Camera::setComPort(IComPort *port)
 
 /////////////////// -- Converting -- ///////////////////////////
 
-char *convertToMessage(const Point point)
+QString convertToMessage(const Point point)
 {
-    return nullptr;
+    QString ret = QString(moveTo) + " " + QString::number(point.X) + " " + QString::number(point.Y);
+    return ret;
 }
 
 Point *convertToPoint( const char *message)
@@ -77,7 +81,7 @@ Point *convertToPoint( const char *message)
     QString msg(message);
     QStringList messageParts = msg.split(' ');
 
-    if (messageParts.size() >= 3 && messageParts[0] == "NEW_POS"){
+    if (messageParts.size() >= 3 && messageParts[0] == currentPosition){
         bool xParsOk = false;
         bool yParsOk = false;
         int x = messageParts[1].toInt(&xParsOk),
