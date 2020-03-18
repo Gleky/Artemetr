@@ -3,20 +3,26 @@
 
 #include "camera.h"
 #include "comport.h"
+#include "manualcameracontrol.h"
+
 
 using namespace PC;
 
 int main(int argc, char *argv[])
 {
-  QApplication a(argc, argv);
-  MainWindow w;
-  w.show();
+    QApplication a(argc, argv);
+    MainWindow w;
+    w.show();
 
-  Camera cam;
-  ComPort port;
+    auto controller = w.label();
+    Camera cam;
+    ComPort port;
 
-  cam.setComPort(&port);
-  port.subscribe(&cam);
+    cam.setComPort(&port);
+    port.subscribe(&cam);
 
-  return a.exec();
+    controller->setCamera(&cam);
+    cam.subscribe(controller);
+
+    return a.exec();
 }

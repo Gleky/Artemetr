@@ -28,7 +28,8 @@ SOURCES += \
         camera.cpp \
         comport.cpp \
         main.cpp \
-        mainwindow.cpp
+        mainwindow.cpp \
+        manualcameracontrol.cpp
 
 HEADERS += \
         camera.h \
@@ -39,7 +40,8 @@ HEADERS += \
         common/irobot.h \
         common/keywords.h \
         mainwindow.h \
-        common/point.h
+        common/point.h \
+        manualcameracontrol.h
 
 FORMS += \
         mainwindow.ui

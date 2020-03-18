@@ -1,15 +1,14 @@
 #pragma once
-#include <stdlib.h>
 
 
-using namespace std;
 
 class Subscriber
 {
 public:
     virtual ~Subscriber() {}
-    virtual void update() = 0;
+    virtual void updateSub() = 0;
 };
+
 
 class Publisher
 {
@@ -33,7 +32,7 @@ protected:
     {
         for (auto sub : _subscribers)
             if (sub != nullptr)
-                sub->update();
+                sub->updateSub();
     }
 
 private:

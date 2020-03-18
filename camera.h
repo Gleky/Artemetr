@@ -21,7 +21,7 @@ public:
     int currentY() const override;
     Point currentPos() const override;
 
-    void update() override;
+    void updateSub() override;
     void setComPort(IComPort *port);
 
 private:

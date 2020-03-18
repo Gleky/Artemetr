@@ -2,10 +2,13 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QLabel>
 
 namespace Ui {
   class MainWindow;
 }
+
+class ManualCameraControl;
 
 class MainWindow : public QMainWindow
 {
@@ -14,6 +17,8 @@ class MainWindow : public QMainWindow
 public:
   explicit MainWindow(QWidget *parent = nullptr);
   ~MainWindow();
+
+    ManualCameraControl *label();
 
 private:
   Ui::MainWindow *ui;

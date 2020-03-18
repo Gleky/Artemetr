@@ -10,5 +10,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-  delete ui;
+    delete ui;
+}
+
+ManualCameraControl *MainWindow::label()
+{
+    return ui->cameraPos;
 }

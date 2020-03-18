@@ -46,7 +46,7 @@ Point Camera::currentPos() const
     return _currentPosition;
 }
 
-void Camera::update()
+void Camera::updateSub()
 {
     if (_port != nullptr) {
         const char *message = _port->readMessage();
