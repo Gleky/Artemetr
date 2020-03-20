@@ -22,9 +22,12 @@ ComPort::~ComPort()
     }
 }
 
-void ComPort::sendMessage(const char *)
+void ComPort::sendMessage(const char *msg)
 {
-    // NEED CODE
+    if ( _port == nullptr )
+        return;
+
+    _port->write(msg);
 }
 
 const char *ComPort::readMessage()
@@ -43,6 +46,7 @@ void ComPort::messageReceived()
             return;
         }
         _lastMessage = _port->readLine();
+        qDebug() << _lastMessage << endl;
         notifySubscribers();
     }
 }
@@ -82,8 +86,9 @@ void ComPort::tryConnect()
 void ComPort::connectPort(QSerialPort *port)
 {
     QString read(port->readLine());
-    if (read.contains(movingCamId))
+    if (read.contains(movingCamId)) {
         port->write(connectRequest);
+    }
     else if (read.contains(connectApprove)) {
         _port = port;
         qDebug() << "Connected! =)";

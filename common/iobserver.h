@@ -16,8 +16,10 @@ public:
     void subscribe(Subscriber *sub)
     {
         for (auto &curSub : _subscribers)
-            if (curSub == nullptr)
+            if (curSub == nullptr) {
                 curSub = sub;
+                break;
+            }
     }
 
     void unsubscribe(Subscriber *sub)

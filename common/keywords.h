@@ -1,5 +1,6 @@
 #pragma once
 
+// #define connnectionSpeed 9600
 #define connnectionSpeed 115200
 #define maxMessageLength 25
 

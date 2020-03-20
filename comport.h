@@ -17,7 +17,7 @@ public:
     ComPort();
     ~ComPort();
 
-    void sendMessage(const char *) override;
+    void sendMessage(const char *msg) override;
     const char *readMessage() override;
 
 private slots:
