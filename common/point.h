@@ -2,6 +2,8 @@
 
 struct Point
 {
+    Point() {}
+    Point (int x, int y) {X = x; Y = y;}
     int X = 0;
     int Y = 0;
 

@@ -7,6 +7,7 @@
 #define movingCamId "MOVING_CAM"
 #define connectRequest "CONNECT_TO_MOVING_CAM"
 #define connectApprove "CONNECTION_SUCCESS"
+#define disconnectRequest "DISCONNECT"
 
 
 //Command names

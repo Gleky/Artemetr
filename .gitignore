@@ -27,7 +27,6 @@
 *.lib
 
 # Executables
-*.exe
 *.out
 *.app
 MovingCam.pro.user.2bdece6
@@ -44,3 +43,5 @@ ui_mainwindow.h
 debug/MovingCam.ilk
 debug/MovingCam.ilk
 *.ilk
+debug/hwFirmware/current_firmware.hex
+debug/MovingCam.exe

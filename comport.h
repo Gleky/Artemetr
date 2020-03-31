@@ -34,6 +34,8 @@ private:
     QByteArray _lastMessage;
 
     QList<QSerialPort *> _availablePorts;
+
+    bool _arduinoNeedUpdate = false;
 };
 
 }

@@ -56,7 +56,7 @@ void Camera::updateSub()
         if (newPosition != nullptr) {
             _currentPosition = *newPosition;
             delete newPosition;
-            qDebug() << _currentPosition.X << ' ' << _currentPosition.Y;
+//            qDebug() << _currentPosition.X << ' ' << _currentPosition.Y;
             notifySubscribers();
         }
     }
