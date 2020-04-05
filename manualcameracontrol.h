@@ -23,6 +23,7 @@ protected:
     void keyPressEvent(QKeyEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
     void resizeEvent(QResizeEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
 
 private:
     ICamera *_camera = nullptr;
@@ -34,8 +35,8 @@ private:
         _height = 0,
         _pointSize = 10;
 
-    const int Hmm = 300;
-    const int Wmm = 300;
+    const int Hmm = 450;
+    const int Wmm = 450;
 
     void stepUp();
     void stepDown();

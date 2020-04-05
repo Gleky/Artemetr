@@ -45,3 +45,4 @@ debug/MovingCam.ilk
 *.ilk
 debug/hwFirmware/current_firmware.hex
 debug/MovingCam.exe
+release/MovingCam.exe

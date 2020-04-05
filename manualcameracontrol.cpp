@@ -90,6 +90,33 @@ void ManualCameraControl::resizeEvent(QResizeEvent *event)
     _pointSize = sqrt(_height*_width)*0.05;
 }
 
+void ManualCameraControl::mousePressEvent(QMouseEvent *event)
+{
+    auto pos = event->pos();
+
+
+
+    Point newPos = {(int)round( static_cast<double>(pos.x()-_leftBorder)*Hmm/_height ),
+                    (int)round( static_cast<double>(pos.y()-_topBorder)*Hmm/_height )};
+
+    if (newPos.X < 0)
+        newPos.X = 0;
+    if (newPos.X > Wmm)
+        newPos.X = Wmm;
+    if (newPos.Y < 0)
+        newPos.Y = 0;
+    if (newPos.Y > Hmm)
+        newPos.Y = Hmm;
+
+//    QRect rect(_leftBorder,_topBorder, _width, _height);
+
+//    if (rect.contains(pos)) {
+        _camera->move(newPos);
+        _targetPos = newPos;
+        update();
+//    }
+}
+
 
 const int step = 20;
 

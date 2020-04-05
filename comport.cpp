@@ -1,6 +1,8 @@
 #include "comport.h"
 #include "keywords.h"
 
+#include "point.h"
+
 #include <QSerialPortInfo>
 #include <QDebug>
 #include <QFile>
@@ -33,10 +35,15 @@ ComPort::~ComPort()
 
 void ComPort::sendMessage(const char *msg)
 {
+//    Point newPos;
+//    newPos.X = *reinterpret_cast<const int16_t *>( msg+xPos );
+//    newPos.Y = *reinterpret_cast<const int16_t *>( msg+yPos );
+
     if ( _port == nullptr )
         return;
 
-    _port->write(msg);
+    int x=0;//debug
+    x=_port->write(msg, commandSize);
 }
 
 const char *ComPort::readMessage()
@@ -55,7 +62,8 @@ void ComPort::messageReceived()
             return;
         }
         _lastMessage = _port->readLine();
-//        qDebug() << _lastMessage << endl;
+        _port->clear();
+        qDebug() << _lastMessage << endl;
         notifySubscribers();
     }
 }

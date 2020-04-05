@@ -8,7 +8,7 @@
 
 namespace PC {
 
-QString convertToMessage(const Point point);
+void convertToMessage(const Point point, char *msg);
 Point *convertToPoint( const char *message);
 
 
@@ -19,19 +19,17 @@ Camera::Camera()
 
 void Camera::move(Point newPos)
 {
-    auto message = convertToMessage(newPos);
-    _port->sendMessage( message.toStdString().c_str() );
+    char message[commandSize] = {0};
+    convertToMessage(newPos, message);
+    int size = sizeof (message);
+    _port->sendMessage( message );
 }
 
 void Camera::moveX(int x)
-{
-
-}
+{}
 
 void Camera::moveY(int y)
-{
-
-}
+{}
 
 int Camera::currentX() const
 {
@@ -70,10 +68,14 @@ void Camera::setComPort(IComPort *port)
 
 /////////////////// -- Converting -- ///////////////////////////
 
-QString convertToMessage(const Point point)
+void convertToMessage(const Point point, char *msg)
 {
-    QString ret = QString(moveTo) + " " + QString::number(point.X) + " " + QString::number(point.Y);
-    return ret;
+    *msg = moveTo;
+    ++msg;
+    int16_t *x = reinterpret_cast<int16_t *>(msg);
+    int16_t *y = reinterpret_cast<int16_t *>(msg+2);
+    *x = static_cast<int16_t>(point.X);
+    *y = static_cast<int16_t>(point.Y);
 }
 
 Point *convertToPoint( const char *message)

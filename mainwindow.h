@@ -5,23 +5,35 @@
 #include <QLabel>
 
 namespace Ui {
-  class MainWindow;
+class MainWindow;
 }
 
 class ManualCameraControl;
+class QPropertyAnimation;
 
 class MainWindow : public QMainWindow
 {
-  Q_OBJECT
+    Q_OBJECT
 
 public:
-  explicit MainWindow(QWidget *parent = nullptr);
-  ~MainWindow();
+    explicit MainWindow(QWidget *parent = nullptr);
+    ~MainWindow();
 
     ManualCameraControl *label();
 
 private:
-  Ui::MainWindow *ui;
+    Ui::MainWindow *ui = nullptr;
+
+    QSize _mainSize;
+    int _expand = 400;
+
+    QPropertyAnimation *animation = nullptr;
+
+    // QWidget interface
+    protected:
+        void resizeEvent(QResizeEvent *event) override;
+private slots:
+        void on_buttonExpandRight_toggled(bool checked);
 };
 
 #endif // MAINWINDOW_H

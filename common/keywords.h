@@ -10,8 +10,12 @@
 #define disconnectRequest "DISCONNECT"
 
 
+#define commandSize 5
+#define commandPos 0
+#define xPos 1
+#define yPos 3
 //Command names
-#define currentPosition "CURRENT_POS"
-#define moveTo "MOVE"
+#define currentPosition 'C'
+#define moveTo 'M'
 // #define moveX "MOVE_X"
 // #define 
