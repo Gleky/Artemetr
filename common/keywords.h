@@ -7,7 +7,7 @@
 #define movingCamId "MOVING_CAM"
 #define connectRequest "CONNECT_TO_MOVING_CAM"
 #define connectApprove "CONNECTION_SUCCESS"
-#define disconnectRequest "DISCONNECT"
+#define closeConnection "CLOSE"
 
 
 #define commandSize 5
@@ -15,7 +15,6 @@
 #define xPos 1
 #define yPos 3
 //Command names
-#define currentPosition 'C'
+#define currentPosition 'P'
 #define moveTo 'M'
-// #define moveX "MOVE_X"
-// #define 
+

@@ -3,12 +3,14 @@
 
 #include <QKeyEvent>
 #include <QPainter>
+#include <QTimer>
 
 
 ManualCameraControl::ManualCameraControl(QWidget *parent)
     :QLabel(parent)
 {
     setFocusPolicy( Qt::StrongFocus );
+    QTimer::singleShot(30, this, &ManualCameraControl::checkKeys);
 }
 
 ManualCameraControl::~ManualCameraControl()
@@ -26,6 +28,10 @@ void ManualCameraControl::updateSub()
     if ( _camera == nullptr )
         return;
 
+    auto newPos = _camera->currentPos();
+    if ( _currentPos == newPos )
+        return;
+
     _currentPos = _camera->currentPos();
     update();
 }
@@ -33,16 +39,27 @@ void ManualCameraControl::updateSub()
 void ManualCameraControl::keyPressEvent(QKeyEvent *event)
 {
     if ( event->key() == Qt::Key_Up ) {
-        stepUp();
+        buttonUp = true;
     } else if ( event->key() == Qt::Key_Down ) {
-        stepDown();
+        buttonDown = true;
     } else if ( event->key() == Qt::Key_Left ) {
-        stepLeft();
+        buttonLeft = true;
     } else if ( event->key() == Qt::Key_Right ) {
-        stepRight();
+        buttonRight = true;
     }
-    _camera->move(_targetPos);
-    update();
+}
+
+void ManualCameraControl::keyReleaseEvent(QKeyEvent *event)
+{
+    if ( event->key() == Qt::Key_Up ) {
+        buttonUp = false;
+    } else if ( event->key() == Qt::Key_Down ) {
+        buttonDown = false;
+    } else if ( event->key() == Qt::Key_Left ) {
+        buttonLeft = false;
+    } else if ( event->key() == Qt::Key_Right ) {
+        buttonRight = false;
+    }
 }
 
 void ManualCameraControl::paintEvent(QPaintEvent *event)
@@ -94,10 +111,8 @@ void ManualCameraControl::mousePressEvent(QMouseEvent *event)
 {
     auto pos = event->pos();
 
-
-
     Point newPos = {(int)round( static_cast<double>(pos.x()-_leftBorder)*Hmm/_height ),
-                    (int)round( static_cast<double>(pos.y()-_topBorder)*Hmm/_height )};
+                    Hmm -(int)round( static_cast<double>(pos.y()-_topBorder)*Hmm/_height )};
 
     if (newPos.X < 0)
         newPos.X = 0;
@@ -108,52 +123,72 @@ void ManualCameraControl::mousePressEvent(QMouseEvent *event)
     if (newPos.Y > Hmm)
         newPos.Y = Hmm;
 
-//    QRect rect(_leftBorder,_topBorder, _width, _height);
-
-//    if (rect.contains(pos)) {
-        _camera->move(newPos);
-        _targetPos = newPos;
-        update();
-//    }
+    moveTo(newPos);
 }
 
-
-const int step = 20;
-
-void ManualCameraControl::stepUp()
+void ManualCameraControl::checkKeys()
 {
-    _targetPos.Y -= step;
-    if ( _targetPos.Y < 0 )
-        _targetPos.Y = 0;
+    Point newPos = _targetPos;
+    if ( buttonUp )
+        stepUp(newPos);
+    if ( buttonDown )
+        stepDown(newPos);
+    if ( buttonLeft )
+        stepLeft(newPos);
+    if ( buttonRight )
+        stepRight(newPos);
+
+    moveTo(newPos);
+    QTimer::singleShot(100, this, &ManualCameraControl::checkKeys);
 }
 
-void ManualCameraControl::stepDown()
+
+const int step = 5;
+
+void ManualCameraControl::stepUp(Point &newPos) const
 {
-    _targetPos.Y += step;
-    if ( _targetPos.Y > Hmm )
-        _targetPos.Y = Hmm;
+    newPos.Y += step;
+    if ( newPos.Y > Hmm )
+        newPos.Y = Hmm;
 }
 
-void ManualCameraControl::stepLeft()
+void ManualCameraControl::stepDown(Point &newPos) const
 {
-    _targetPos.X -= step;
-    if ( _targetPos.X < 0 )
-        _targetPos.X = 0;
+    newPos.Y -= step;
+    if ( newPos.Y < 0 )
+        newPos.Y = 0;
 }
 
-void ManualCameraControl::stepRight()
+void ManualCameraControl::stepLeft(Point &newPos) const
 {
-    _targetPos.X += step;
-    if ( _targetPos.X > Wmm )
-        _targetPos.X = Wmm;
+    newPos.X -= step;
+    if ( newPos.X < 0 )
+        newPos.X = 0;
 }
 
-int ManualCameraControl::mappedValue(const Point &pos, ManualCameraControl::Dimention dimention)
+void ManualCameraControl::stepRight(Point &newPos) const
+{
+    newPos.X += step;
+    if ( newPos.X > Wmm )
+        newPos.X = Wmm;
+}
+
+int ManualCameraControl::mappedValue(const Point &pos, ManualCameraControl::Dimention dimention) const
 {
     if ( dimention == Y ) {
-        return round( static_cast<double>(pos.Y)*_height/Hmm ) + _topBorder;
+        return round( static_cast<double>(Hmm - pos.Y)*_height/Hmm ) + _topBorder;
     }
     else {
         return round( static_cast<double>(pos.X)*_width/Wmm ) + _leftBorder;
     }
+}
+
+void ManualCameraControl::moveTo(const Point &newPos)
+{
+    if ( newPos == _targetPos )
+        return;
+
+    _targetPos = newPos;
+    _camera->move(newPos);
+//    update();
 }

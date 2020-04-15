@@ -46,3 +46,4 @@ debug/MovingCam.ilk
 debug/hwFirmware/current_firmware.hex
 debug/MovingCam.exe
 release/MovingCam.exe
+debug/moc_manualcameracontrol.cpp

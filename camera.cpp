@@ -21,7 +21,6 @@ void Camera::move(Point newPos)
 {
     char message[commandSize] = {0};
     convertToMessage(newPos, message);
-    int size = sizeof (message);
     _port->sendMessage( message );
 }
 
@@ -80,16 +79,10 @@ void convertToMessage(const Point point, char *msg)
 
 Point *convertToPoint( const char *message)
 {
-    QString msg(message);
-    QStringList messageParts = msg.split(' ');
-
-    if (messageParts.size() >= 3 && messageParts[0] == currentPosition){
-        bool xParsOk = false;
-        bool yParsOk = false;
-        int x = messageParts[1].toInt(&xParsOk),
-            y = messageParts[2].toInt(&yParsOk);
-        if (xParsOk && yParsOk)
-            return new Point{x,y};
+    if ( message[0] == currentPosition ){
+        int16_t x = *reinterpret_cast<const int16_t *>( message+xPos );
+        int16_t y = *reinterpret_cast<const int16_t *>( message+yPos );
+        return new Point{x,y};
     }
     return nullptr;
 }

@@ -27,7 +27,7 @@ ComPort::ComPort()
 ComPort::~ComPort()
 {
     if ( _port != nullptr ) {
-        _port->write(disconnectRequest);
+        _port->write(closeConnection ,commandSize);
         _port->close();
         _port->deleteLater();
     }
@@ -35,10 +35,6 @@ ComPort::~ComPort()
 
 void ComPort::sendMessage(const char *msg)
 {
-//    Point newPos;
-//    newPos.X = *reinterpret_cast<const int16_t *>( msg+xPos );
-//    newPos.Y = *reinterpret_cast<const int16_t *>( msg+yPos );
-
     if ( _port == nullptr )
         return;
 
@@ -106,12 +102,17 @@ void ComPort::connectPort(QSerialPort *port)
         return;
 
     QString read(port->readLine());
+    if (read[0] == currentPosition) {
+        port->write(closeConnection ,commandSize);
+        return;
+    }
+
     if (read.contains(movingCamId)) {
         if ( _arduinoNeedUpdate ) {
             updateArduinoFirmware(port, _arduinoNeedUpdate);
             return;
         }
-        port->write(connectRequest); //here port has found
+        port->write(connectRequest);
     }
     else if (read.contains(connectApprove)) {
         _port = port;
