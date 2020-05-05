@@ -15,18 +15,17 @@ public:
     Camera();
 
     void move(Point newPos) override;
-    void moveX(int x) override;
-    void moveY(int y) override;
-    int currentX() const override;
-    int currentY() const override;
     Point currentPos() const override;
+    Point targetPos() const override;
 
-    void updateSub() override;
+    void setBacklight(BacklightState state) override;
+
+    void publisherUpdated() override;
     void setComPort(IComPort *port);
 
 private:
     Point _currentPosition;
-    Point _targetPosition;
+    Point _targetPosition = {-1,-1};
 
     mutable QMutex mutex ;
 

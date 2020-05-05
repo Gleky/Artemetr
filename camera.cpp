@@ -9,35 +9,19 @@
 namespace PC {
 
 void convertToMessage(const Point point, char *msg);
-Point *convertToPoint( const char *message);
+Point convertToPoint( const char *message);
 
 
 Camera::Camera()
-{
-
-}
+{}
 
 void Camera::move(Point newPos)
 {
+    _targetPosition = newPos;
+
     char message[commandSize] = {0};
     convertToMessage(newPos, message);
     _port->sendMessage( message );
-}
-
-void Camera::moveX(int x)
-{}
-
-void Camera::moveY(int y)
-{}
-
-int Camera::currentX() const
-{
-    return _currentPosition.X;
-}
-
-int Camera::currentY() const
-{
-    return _currentPosition.Y;
 }
 
 Point Camera::currentPos() const
@@ -45,18 +29,48 @@ Point Camera::currentPos() const
     return _currentPosition;
 }
 
-void Camera::updateSub()
+Point Camera::targetPos() const
 {
-    if (_port != nullptr) {
-        const char *message = _port->readMessage();
-        Point *newPosition = convertToPoint(message);
-        if (newPosition != nullptr) {
-            _currentPosition = *newPosition;
-            delete newPosition;
-//            qDebug() << _currentPosition.X << ' ' << _currentPosition.Y;
+    return  _targetPosition;
+}
+
+void Camera::setBacklight(BacklightState state)
+{
+    if ( _port == nullptr )
+        return;
+
+    char msg[5] = {0};
+    *msg = setBacklightState;
+    BacklightState *st = reinterpret_cast<BacklightState*>(msg+backlightStateIndex);
+    *st = state;
+    _port->sendMessage(msg);
+}
+
+void Camera::publisherUpdated()
+{
+    if (_port == nullptr)
+        return;
+    const char *message = _port->readMessage();
+    Point newPosition = convertToPoint(message);
+
+    if ( newPosition == Point() )
+        return;
+
+    if ( newPosition == _currentPosition && _currentPosition != _targetPosition )
+        move(_targetPosition);
+
+    _currentPosition = newPosition;
+
+    bool movingDone = _currentPosition == _targetPosition;
+    static bool movingDoneUpdated = false;
+    if ( !movingDone ) {
+        notifySubscribers();
+        movingDoneUpdated = false;
+    } else
+        if ( !movingDoneUpdated ){
             notifySubscribers();
+            movingDoneUpdated = true;
         }
-    }
 }
 
 void Camera::setComPort(IComPort *port)
@@ -69,7 +83,7 @@ void Camera::setComPort(IComPort *port)
 
 void convertToMessage(const Point point, char *msg)
 {
-    *msg = moveTo;
+    *msg = moveCamTo;
     ++msg;
     int16_t *x = reinterpret_cast<int16_t *>(msg);
     int16_t *y = reinterpret_cast<int16_t *>(msg+2);
@@ -77,17 +91,14 @@ void convertToMessage(const Point point, char *msg)
     *y = static_cast<int16_t>(point.Y);
 }
 
-Point *convertToPoint( const char *message)
+Point convertToPoint( const char *message)
 {
-    if ( message[0] == currentPosition ){
-        int16_t x = *reinterpret_cast<const int16_t *>( message+xPos );
-        int16_t y = *reinterpret_cast<const int16_t *>( message+yPos );
-        return new Point{x,y};
+    if ( message[0] == currentCamPosition ){
+        int16_t x = *reinterpret_cast<const int16_t *>( message+xPosIndex );
+        int16_t y = *reinterpret_cast<const int16_t *>( message+yPosIndex );
+        return Point{x,y};
     }
-    return nullptr;
+    return Point();
 }
 
-}
-
-
-
+} //namespace PC

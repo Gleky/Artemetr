@@ -5,6 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui serialport
+QT += multimediawidgets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -26,22 +27,33 @@ CONFIG += c++11
 
 SOURCES += \
         camera.cpp \
+        cameracontrol.cpp \
+        cameraschemewidget.cpp \
+        camerawidget.cpp \
         comport.cpp \
+#        imageanalyzer.cpp \
         main.cpp \
         mainwindow.cpp \
-        manualcameracontrol.cpp
+        resultsaver.cpp \
+        robot.cpp
 
 HEADERS += \
         camera.h \
+        cameracontrol.h \
+        cameraschemewidget.h \
+        camerawidget.h \
         comport.h \
         common/icamera.h \
         common/icomport.h \
         common/iobserver.h \
         common/irobot.h \
         common/keywords.h \
+#        imageanalyzer.h \
         mainwindow.h \
         common/point.h \
-        manualcameracontrol.h
+        resultsaver.h \
+        robot.h \
+        struct_result.h
 
 FORMS += \
         mainwindow.ui
@@ -52,3 +64,15 @@ INCLUDEPATH += common/
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+#win32:CONFIG(release, debug|release): LIBS += -L$$PWD/opencv/build/x64/vc15/lib/ -lopencv_world430
+#else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/opencv/build/x64/vc15/lib/ -lopencv_world430d
+
+#INCLUDEPATH += $$PWD/opencv/build/include
+#DEPENDPATH += $$PWD/opencv/build/include
+
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/imageAnalyzer/release/ -limageAnalyzer
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/imageAnalyzer/debug/ -limageAnalyzer
+
+INCLUDEPATH += $$PWD/imageAnalyzer
+DEPENDPATH += $$PWD/imageAnalyzer

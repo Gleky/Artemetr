@@ -6,7 +6,7 @@ class Subscriber
 {
 public:
     virtual ~Subscriber() {}
-    virtual void updateSub() = 0;
+    virtual void publisherUpdated() = 0;
 };
 
 
@@ -34,7 +34,7 @@ protected:
     {
         for (auto sub : _subscribers)
             if (sub != nullptr)
-                sub->updateSub();
+                sub->publisherUpdated();
     }
 
 private:

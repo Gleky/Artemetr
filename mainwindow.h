@@ -3,12 +3,16 @@
 
 #include <QMainWindow>
 #include <QLabel>
+#include <QCameraViewfinder>
+#include <QCamera>
+
+class Robot;
 
 namespace Ui {
 class MainWindow;
 }
 
-class ManualCameraControl;
+class CameraControl;
 class QPropertyAnimation;
 
 class MainWindow : public QMainWindow
@@ -19,21 +23,17 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-    ManualCameraControl *label();
+    void setCameraView(QWidget *cameraview);
+    void setCameraPos(QWidget *camerapos);
+
+    void connectButtons(Robot *robot);
 
 private:
     Ui::MainWindow *ui = nullptr;
+    Robot* _robot = nullptr;
 
-    QSize _mainSize;
-    int _expand = 400;
-
-    QPropertyAnimation *animation = nullptr;
-
-    // QWidget interface
-    protected:
-        void resizeEvent(QResizeEvent *event) override;
-private slots:
-        void on_buttonExpandRight_toggled(bool checked);
+protected:
+    void closeEvent(QCloseEvent *event) override;
 };
 
 #endif // MAINWINDOW_H

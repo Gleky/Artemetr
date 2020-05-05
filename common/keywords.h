@@ -1,20 +1,29 @@
 #pragma once
 
-// #define connnectionSpeed 9600
+// HARDWARE PARAMETERS
 #define connnectionSpeed 115200
-#define maxMessageLength 25
+#define xMaxPos 465
+#define yMaxPos 450
 
+
+//Connection commands
 #define movingCamId "MOVING_CAM"
 #define connectRequest "CONNECT_TO_MOVING_CAM"
 #define connectApprove "CONNECTION_SUCCESS"
 #define closeConnection "CLOSE"
 
 
+/////Position messages////
+#define currentCamPosition 'P'
+#define moveCamTo 'M'
+
 #define commandSize 5
-#define commandPos 0
-#define xPos 1
-#define yPos 3
-//Command names
-#define currentPosition 'P'
-#define moveTo 'M'
+#define commandIndex 0
+#define xPosIndex 1
+#define yPosIndex 3
+
+
+/////Backlight messages
+#define setBacklightState 'L'
+#define backlightStateIndex 1
 

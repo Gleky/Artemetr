@@ -19,7 +19,7 @@ ComPort::ComPort()
 {
     checkNewArduinoFirmware(_arduinoNeedUpdate);
     connect(&_connectTimer, &QTimer::timeout, this, &ComPort::tryConnect);
-    _connectTimer.setInterval(5000);
+    _connectTimer.setInterval(3000);
     _connectTimer.start();
     tryConnect();
 }
@@ -38,8 +38,7 @@ void ComPort::sendMessage(const char *msg)
     if ( _port == nullptr )
         return;
 
-    int x=0;//debug
-    x=_port->write(msg, commandSize);
+    _port->write(msg, commandSize);
 }
 
 const char *ComPort::readMessage()
@@ -57,16 +56,18 @@ void ComPort::messageReceived()
             portDisconnected();
             return;
         }
-        _lastMessage = _port->readLine();
+        _lastMessage = _port->read(commandSize);
         _port->clear();
-        qDebug() << _lastMessage << endl;
+//        qDebug() << _lastMessage << endl;
         notifySubscribers();
     }
 }
 
-void ComPort::portDisconnected(/*QSerialPort::SerialPortError error*/)
+void ComPort::portDisconnected()
 {
     qDebug() << "Disconnected! =(";
+    emit disconnected();
+
     if (_port != nullptr) {
         _port->close();
         _port->deleteLater();
@@ -102,7 +103,7 @@ void ComPort::connectPort(QSerialPort *port)
         return;
 
     QString read(port->readLine());
-    if (read[0] == currentPosition) {
+    if (read[0] == currentCamPosition) {
         port->write(closeConnection ,commandSize);
         return;
     }
@@ -115,8 +116,10 @@ void ComPort::connectPort(QSerialPort *port)
         port->write(connectRequest);
     }
     else if (read.contains(connectApprove)) {
-        _port = port;
         qDebug() << "Connected! =)";
+        emit connected();
+
+        _port = port;
         _connectTimer.stop();
         connect(_port, &QSerialPort::errorOccurred, this, &ComPort::portDisconnected);
         for (auto prt : _availablePorts)

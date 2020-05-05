@@ -1,20 +1,16 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include <QDebug>
-#include <QPropertyAnimation>
-#include <QResizeEvent>
-#include <QScreen>
+#include "robot.h"
+#include <QTimer>
+#include <QCloseEvent>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
-    animation = new QPropertyAnimation(this, "size");
-    animation->setDuration(300);
-    animation->setEasingCurve(QEasingCurve::InOutCubic);
+    QTimer::singleShot(1000,this, &MainWindow::show);
 }
 
 MainWindow::~MainWindow()
@@ -22,46 +18,39 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-ManualCameraControl *MainWindow::label()
+void MainWindow::setCameraView(QWidget *cameraview)
 {
-    return ui->cameraPos;
+    ui->frameCameraView->addWidget(cameraview);
+    cameraview->setMinimumSize(640,480);
 }
 
-void MainWindow::resizeEvent(QResizeEvent *event)
+void MainWindow::setCameraPos(QWidget *camerapos)
 {
-    const int expandButtonWidth = 20;
-
-    int mainHeight = ui->centralWidget->height();
-
-    if (animation->state() == QPropertyAnimation::Stopped) {
-        if ( !ui->buttonExpandRight->isChecked() ) {
-            _mainSize = size();
-        }
-    }
-
-    int availableWidth = ui->centralWidget->width()-_mainSize.width();
-    ui->cameraPos->setGeometry(_mainSize.width(), 0, availableWidth, mainHeight);
-
-    ui->buttonExpandRight->setGeometry(_mainSize.width() - expandButtonWidth, 0, expandButtonWidth, mainHeight);
-    ui->labelCameraImage->setGeometry(0, 0, _mainSize.width() - ui->buttonExpandRight->width(), mainHeight);
+    ui->frameCameraPos->addWidget(camerapos);
+    camerapos->setFixedSize(300,320);
 }
 
-void MainWindow::on_buttonExpandRight_toggled(bool checked)
+void MainWindow::connectButtons(Robot *robot)
 {
-    if ( checked ) {
-        _mainSize = size();
-        auto _expandSize = QSize(width() + _expand ,height());
-
-        animation->setStartValue(_mainSize);
-        animation->setEndValue(_expandSize);
-    }
-    else {
-        _expand = size().width() - _mainSize.width();
-        _mainSize = QSize( _mainSize.width(), size().height() );
-
-        animation->setStartValue( size() );
-        animation->setEndValue( _mainSize );
-    }
-
-    animation->start();
+    _robot = robot;
+    connect(ui->pushButtonStart, &QPushButton::clicked, robot, &Robot::start);
+    connect(ui->pushButtonPause, &QPushButton::clicked, robot, &Robot::pause);
+    connect(ui->pushButtonStop, &QPushButton::clicked, robot, &Robot::stop);
 }
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    static bool firstCall = true;
+
+    if ( !firstCall ) {
+        QApplication::exit();
+        return;
+    }
+
+    _robot->prepareToClose();
+    event->ignore();
+    firstCall = false;
+    QTimer::singleShot(10000, this, &MainWindow::close);
+    hide();
+}
+

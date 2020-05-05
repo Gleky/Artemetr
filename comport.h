@@ -11,14 +11,19 @@ class QSerialPort;
 
 namespace PC {
 
-class ComPort : public IComPort, public QObject
+class ComPort : public QObject, public IComPort
 {
+    Q_OBJECT
 public:
     ComPort();
     ~ComPort();
 
     void sendMessage(const char *msg) override;
     const char *readMessage() override;
+
+signals:
+    void connected();
+    void disconnected();
 
 private slots:
     void messageReceived();

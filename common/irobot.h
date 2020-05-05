@@ -1,11 +1,15 @@
 #pragma once
 
+#include "iobserver.h"
+#include "struct_result.h"
+
+
 class IRobot
 {
+public:
     ~IRobot() {}
-    virtual void home() = 0;
-    virtual void checkTable() = 0;
 
-    virtual bool hasNext() const = 0;
-    virtual void goNext() = 0;
+    virtual void start() = 0;
+    virtual void pause() = 0;
+    virtual void stop() = 0;
 };
