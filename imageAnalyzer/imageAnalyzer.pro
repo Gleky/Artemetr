@@ -30,8 +30,8 @@ unix {
 }
 !isEmpty(target.path): INSTALLS += target
 
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../opencv/build/x64/vc15/lib/ -lopencv_world430
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../opencv/build/x64/vc15/lib/ -lopencv_world430d
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/opencv/build/x64/vc15/lib/ -lopencv_world430
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/opencv/build/x64/vc15/lib/ -lopencv_world430d
 
-INCLUDEPATH += $$PWD/../opencv/build/include
-DEPENDPATH += $$PWD/../opencv/build/include
+INCLUDEPATH += $$PWD/opencv/build/include
+DEPENDPATH += $$PWD/opencv/build/include

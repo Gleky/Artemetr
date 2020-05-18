@@ -9,7 +9,7 @@ QT += multimediawidgets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = MovingCam
+#TARGET = MovingCam
 TEMPLATE = app
 
 # The following define makes your compiler emit warnings if you use
@@ -25,13 +25,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 CONFIG += c++11
 
+RC_ICONS = appicon.ico
+
 SOURCES += \
         camera.cpp \
         cameracontrol.cpp \
         cameraschemewidget.cpp \
         camerawidget.cpp \
         comport.cpp \
-#        imageanalyzer.cpp \
         main.cpp \
         mainwindow.cpp \
         resultsaver.cpp \
@@ -48,7 +49,6 @@ HEADERS += \
         common/iobserver.h \
         common/irobot.h \
         common/keywords.h \
-#        imageanalyzer.h \
         mainwindow.h \
         common/point.h \
         resultsaver.h \
@@ -64,12 +64,6 @@ INCLUDEPATH += common/
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
-
-#win32:CONFIG(release, debug|release): LIBS += -L$$PWD/opencv/build/x64/vc15/lib/ -lopencv_world430
-#else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/opencv/build/x64/vc15/lib/ -lopencv_world430d
-
-#INCLUDEPATH += $$PWD/opencv/build/include
-#DEPENDPATH += $$PWD/opencv/build/include
 
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/imageAnalyzer/release/ -limageAnalyzer
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/imageAnalyzer/debug/ -limageAnalyzer

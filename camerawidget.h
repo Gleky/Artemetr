@@ -26,12 +26,12 @@ private slots:
     void hideResult();
 
 private:
-    QCamera _camera;
+    QCamera *_camera = nullptr;
     QCameraViewfinder _viewfinder;
     QLabel _resultLabel;
     QTimer _showResultTimer;
 public:
-    QCameraImageCapture _capture;
+    QCameraImageCapture *_capture = nullptr;
 };
 
 #endif // CAMERAWIDGET_H

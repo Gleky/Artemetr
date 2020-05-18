@@ -38,6 +38,11 @@ void MainWindow::connectButtons(Robot *robot)
     connect(ui->pushButtonStop, &QPushButton::clicked, robot, &Robot::stop);
 }
 
+QTextEdit *MainWindow::console()
+{
+    return ui->textEdit;
+}
+
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     static bool firstCall = true;

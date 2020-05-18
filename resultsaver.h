@@ -17,7 +17,7 @@ public slots:
 
 private:
     QString _savePath;
-    QString _sourceSubfolder = "source/";
+    QString _sourcePath = "../sources/";
 };
 
 #endif // RESULTSAVER_H

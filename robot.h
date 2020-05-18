@@ -5,7 +5,7 @@
 #include "cameracontrol.h"
 #include "imageanalyzer.h"
 
-
+class QTextEdit; //KOSTIL'
 class ImageAnalyzer;
 class CameraWidget;
 
@@ -18,6 +18,8 @@ public:
 
     void setCameraControl(CameraControl *camera);
     void setCameraView(CameraWidget *cameraWidget);
+
+    void setConsole(QTextEdit *console); //KOSTIL'
 
     void prepareToClose();
 
@@ -46,6 +48,8 @@ private:
 
     CameraControl *_cameraController = nullptr;
     CameraWidget *_cameraWidget = nullptr;
+
+    QTextEdit *_console = nullptr; //KOSTIL'
 };
 
 #endif // ROBOT_H

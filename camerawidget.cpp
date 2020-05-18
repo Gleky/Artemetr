@@ -1,10 +1,10 @@
 #include "camerawidget.h"
 
 #include <QCameraInfo>
+#include <QMessageBox>
 
 CameraWidget::CameraWidget(QWidget *parent)
-    : QWidget(parent),
-      _capture(&_camera)
+    : QWidget(parent)
 {
     connect(&_showResultTimer, &QTimer::timeout, this, &CameraWidget::hideResult);
     _showResultTimer.setInterval(2500);
@@ -12,16 +12,47 @@ CameraWidget::CameraWidget(QWidget *parent)
     _viewfinder.setParent(this);
     _resultLabel.setParent(this);
 
-    _capture.setCaptureDestination(QCameraImageCapture::CaptureToBuffer);
+    auto cameras = QCameraInfo::availableCameras();
 
-    _camera.setViewfinder(&_viewfinder);
-    _camera.load();
-    auto resolutions = _camera.supportedViewfinderResolutions();
-    QCameraViewfinderSettings settings;
-    settings.setResolution(resolutions.last());
-    _camera.setViewfinderSettings(settings);
-    _camera.start();
-    _viewfinder.show();
+    for (auto camera : cameras)
+    {
+        _camera = new QCamera(camera);
+        _camera->setViewfinder(&_viewfinder);
+        _camera->load();
+        auto resolutions = _camera->supportedViewfinderResolutions();
+        QSize needResolution = {0,0};
+
+        for ( auto res : resolutions)
+        {
+            if ( res.height() == 960 && res.width() == 1280)
+                needResolution = res;
+        }
+
+        if ( needResolution.height() > 0)
+        {
+            QCameraViewfinderSettings settings;
+            settings.setResolution(needResolution);
+            _camera->setViewfinderSettings(settings);
+            break;
+        }
+        else
+        {
+            _camera->deleteLater();
+            _camera = nullptr;
+        }
+    }
+
+    if ( _camera != nullptr )
+    {
+        _capture = new QCameraImageCapture(_camera);
+        _capture->setCaptureDestination(QCameraImageCapture::CaptureToBuffer);
+        _camera->start();
+        _viewfinder.show();
+    }
+    else
+    {
+        QMessageBox::warning(this, "Camera not found", "Please connect camera and restart app");
+    }
 }
 
 void CameraWidget::showResult(Result result)

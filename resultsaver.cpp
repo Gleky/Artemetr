@@ -10,14 +10,15 @@ ResultSaver::ResultSaver()
 
 void ResultSaver::setFolder(QString folderName)
 {
-    _savePath = folderName + '/';
+    _savePath = "../" + folderName + '/';
 
     QDir saveDir(_savePath);
     if ( !saveDir.exists() )
         saveDir.mkpath(_savePath);
 
-    if ( !saveDir.exists(_sourceSubfolder) )
-        saveDir.mkdir(_sourceSubfolder);
+    QDir scourceDir(_sourcePath);
+    if ( !scourceDir.exists() )
+        scourceDir.mkpath(_sourcePath);
 }
 
 void ResultSaver::saveResult(Result result)
@@ -26,5 +27,5 @@ void ResultSaver::saveResult(Result result)
 
     result.result.save(_savePath+fileName+".jpg", "JPEG", 100);
 
-    result.source.save(_savePath+_sourceSubfolder+fileName+" source.jpg", "JPEG", 100);
+    result.source.save(_sourcePath+fileName+" source.jpg", "JPEG", 100);
 }

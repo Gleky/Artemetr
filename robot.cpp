@@ -5,6 +5,9 @@
 
 #include <QApplication>
 
+#include <QTextEdit> //KOSTIL'
+#include <QFile>
+
 Robot::Robot()
 {
     connect(&_imageAnalyzer, &ImageAnalyzer::resultReady, this, &Robot::resultReady, Qt::QueuedConnection);
@@ -22,12 +25,28 @@ void Robot::setCameraControl(CameraControl *camera)
 void Robot::setCameraView(CameraWidget *cameraWidget)
 {
     _cameraWidget = cameraWidget;
-    connect(&cameraWidget->_capture, &QCameraImageCapture::imageCaptured, this, &Robot::imageCaptured);
+
+    if (_cameraWidget->_capture != nullptr)
+        connect(cameraWidget->_capture, &QCameraImageCapture::imageCaptured, this, &Robot::imageCaptured);
     connect(this, &Robot::result, _cameraWidget, &CameraWidget::showResult, Qt::QueuedConnection);
+}
+
+void Robot::setConsole(QTextEdit *console)
+{
+    _console = console;
+
+    QFile points("../Points.txt");
+    points.open(QIODevice::ReadWrite);
+    QTextStream stream(&points);
+    auto text = stream.readAll();
+    _console->setText(text);
+    points.close();
 }
 
 void Robot::prepareToClose()
 {
+    findTargetPoints(); //KOSTIL'
+
     if ( !_cameraController->isConnected() ){
         QApplication::exit();
         return;
@@ -80,7 +99,8 @@ void Robot::cameraAtTargetPoint()
             QApplication::exit();
         return;
     }
-    _cameraWidget->_capture.capture(); //KOSTIL'
+    if (_cameraWidget->_capture != nullptr) //KOSTIL'
+        _cameraWidget->_capture->capture(); //KOSTIL'
     _targetPoints.removeFirst();
 }
 
@@ -101,12 +121,30 @@ void Robot::resultReady(Result res)
 void Robot::findTargetPoints()
 {
     _targetPoints.clear();
-    _targetPoints.append(Point(0,0));
-    _targetPoints.append(Point(15,0));
-    _targetPoints.append(Point(30,0));
-    _targetPoints.append(Point(45,0));
-    _targetPoints.append(Point(0,15));
-    _targetPoints.append(Point(15,15));
-    _targetPoints.append(Point(30,15));
-    _targetPoints.append(Point(45,15));
+
+    QString text = _console->toPlainText();
+    auto list = text.split("\n", QString::SkipEmptyParts);
+
+    while (list.size() > 0)
+    {
+        auto pair = list.takeFirst().split(" ",  QString::SkipEmptyParts);
+        if (pair.size() > 1)
+        {
+            bool checkX = false;
+            int x = pair.takeFirst().toInt(&checkX);
+            bool checkY = false;
+            int y = pair.takeFirst().toInt(&checkY);
+            if (checkX && checkY)
+            {
+                Point point = {x,y};
+                _targetPoints.append(point);
+            }
+        }
+    }
+
+    QFile points("../Points.txt");
+    points.open(QIODevice::ReadWrite);
+    QTextStream stream(&points);
+    stream << _console->toPlainText();
+    points.close();
 }

@@ -35,6 +35,7 @@ int main(int argc, char *argv[])
     robot.setCameraControl(&cameraController);
     robot.setCameraView(&cameraWidget);
     window.connectButtons(&robot);
+    robot.setConsole(window.console()); //KOSTIL'
 
     ResultSaver saver;
     saver.setFolder("results");

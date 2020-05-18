@@ -6,6 +6,8 @@
 #include <QCameraViewfinder>
 #include <QCamera>
 
+
+class QTextEdit; //KOSTIL'
 class Robot;
 
 namespace Ui {
@@ -27,6 +29,8 @@ public:
     void setCameraPos(QWidget *camerapos);
 
     void connectButtons(Robot *robot);
+
+    QTextEdit *console(); //KOSTIL'
 
 private:
     Ui::MainWindow *ui = nullptr;
