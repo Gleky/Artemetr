@@ -27,7 +27,7 @@ ComPort::ComPort()
 ComPort::~ComPort()
 {
     if ( _port != nullptr ) {
-        _port->write(closeConnection ,commandSize);
+        _port->write(closeConnection, commandSize);
         _port->close();
         _port->deleteLater();
     }
@@ -131,7 +131,8 @@ void ComPort::connectPort(QSerialPort *port)
     }
 }
 
-}
+} //namespace PC
+
 
 const QString hwfwDir = "/hwFirmware/";
 const QString newFwName = "firmware.hex";

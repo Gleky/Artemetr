@@ -5,6 +5,8 @@
 #include "cameracontrol.h"
 #include "imageanalyzer.h"
 
+#include <QTimer>
+
 class QTextEdit; //KOSTIL'
 class ImageAnalyzer;
 class CameraWidget;
@@ -35,11 +37,13 @@ public slots:
 
 signals:
     void result(Result);
+    void done();
 
 private:
     void findTargetPoints();
     QVector<Point> _targetPoints;
     void getNext();
+    QTimer _delay;
 
     enum RobotState {Started, Paused, Stoped, Closing};
     RobotState _state = Stoped;

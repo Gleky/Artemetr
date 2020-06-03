@@ -108,6 +108,16 @@ void CameraSchemeWidget::paintEvent(QPaintEvent *event)
         painter.setPen( linepen );
         painter.drawText((width() - 80)/2, (height() - 15)/2, 80, 15, Qt::AlignCenter, "DISCONNECTED");
     }
+
+    if ( currentPos.X >= 0 && currentPos.Y >= 0 ) {
+        linepen.setColor( QColor(80,80,80) );
+        painter.setPen( linepen );
+        QFont font = painter.font();
+        font.setPixelSize(16);
+        painter.setFont(font);
+        painter.drawText((width() - 80)/2, (height() - 25)/2, 80, 25, Qt::AlignCenter,
+                         QString::number(currentPos.X)+"  "+QString::number(currentPos.Y));
+    }
 }
 
 void CameraSchemeWidget::resizeEvent(QResizeEvent *event)
@@ -133,7 +143,7 @@ void CameraSchemeWidget::resizeEvent(QResizeEvent *event)
         height = width / tableRatio;
         _topBorder = (widgetHeight - height)/2;
     }
-    _pointSize = sqrt(height*width)*0.05;
+    _pointSize = sqrt(height*width)*0.03;
     _scale = height/yMaxPos;
 }
 
@@ -155,7 +165,7 @@ void CameraSchemeWidget::checkKeys()
     emit moveToPoint(newPos);
 }
 
-const int step = 2;
+const int step = 1;
 
 void CameraSchemeWidget::stepUp(Point &newPos) const
 {

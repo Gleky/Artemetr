@@ -14,10 +14,15 @@ public:
 
 public slots:
     void saveResult(Result result);
+    void setDone();
 
 private:
     QString _savePath;
     QString _sourcePath = "../sources/";
+
+    int _crayfishCount = 0;
+    int _eggsCount = 0;
+    bool _lastResultSaved = true;
 };
 
 #endif // RESULTSAVER_H

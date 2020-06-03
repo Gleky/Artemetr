@@ -30,9 +30,8 @@ private:
 
     int _topBorder = 0,
         _leftBorder = 0,
-//        _width = 0,
-//        _height = 0,
-        _pointSize = 10;
+
+        _pointSize = 4;
 
     double _scale = 1.0;
 

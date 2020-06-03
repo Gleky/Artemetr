@@ -14,103 +14,121 @@ void ImageAnalyzer::getResult(const QImage &img)
     QtConcurrent::run(this, &ImageAnalyzer::compute,img);
 }
 
+double median( cv::Mat channel );
+
 void ImageAnalyzer::compute(QImage img)
 {
+    qDebug() << "Preparing to analyze";
     Result result;
-    result.source = img;
-    result.crayfishCount = 14;
-    result.eggsCount = 88;
+    result.source = img.copy();
 
-    QImage *src = &(result.source);
+    QImage *src = &img;
 
     cv::Mat inputImg( src->height(), src->width(), CV_8UC4, src->bits(), src->bytesPerLine());
-    cv::Mat forSearch,ret; // deep copy just in case (my lack of knowledge with open cv)
-    cvtColor(inputImg, forSearch,cv::COLOR_BGR2GRAY);
+    cv::Mat forStudy, ret; // deep copy just in case (my lack of knowledge with open cv)
+    cvtColor(inputImg, forStudy, cv::COLOR_BGR2GRAY);
+    cvtColor(inputImg, ret, cv::COLOR_BGRA2RGB);
 
-    for (int i = 0; i < 1; ++i)
-        cv::GaussianBlur(forSearch,forSearch,cv::Size(3,3),0);
+    qDebug() << "Start analyze";
+    auto v = median(forStudy);
+    double sigma = 0.48;
+    int lower = int( std::max(0., (1-sigma)*v) );
+    int upper = int( std::min(255., (1+sigma)*v) );
 
-//    cv::inRange(forSearch, 0, 110, forSearch);
-////   Canny(gray,bin, h, H, 3);
-    Canny(forSearch,ret, 160, 30, 3);
+    cv::Canny(forStudy,forStudy, lower,upper);
 
-//    Mat kernel = getStructuringElement(MORPH_RECT, Size(2,2));
-//    morphologyEx(bin, bin, MORPH_CLOSE, kernel);
+    cv::Mat kerne = getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(2,2));
+    cv::morphologyEx(forStudy, forStudy, cv::MORPH_GRADIENT, kerne);
+    cv::morphologyEx(forStudy, forStudy, cv::MORPH_CLOSE, kerne);
 
-//    std::vector<std::vector<Point> > contours;
-//    findContours(bin, contours, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
 
-//    int i = 0;
-//    int found = 0;
-//    for (auto contour : contours) {
-//        double s = fabs(contourArea(contour));
-////        double p = arcLength(contour, false);
-//        if (s > 35 && s < 180) {
-//            drawContours(img,contours,i,Scalar(0,255,0), 1);
-//            ++found;
-//        }
-//        ++i;
-//    }
+    std::vector<std::vector<cv::Point> > contours;
+    cv::findContours(forStudy, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_TC89_KCOS);
 
-//    QImage imgOriginal(img.data, img.cols, img.rows, static_cast<int>(img.step), QImage::Format_RGB888);
+    int found = 0;
+    for ( int k = 0; k < contours.size(); ++k )
+    {
+        auto contour = contours[k];
 
-//    Result res;
-//    emit resultReady(res);
-//    _ui->labelImg->setPixmap(QPixmap::fromImage(imgOriginal));s
+        double s = fabs( contourArea(contour) );
+        double p = arcLength( contour, false )/s;
 
-//    _ui->statusBar->showMessage("Найдено рачков: " + QString::number(found));
+            if ( 190 > s || s > 524 )
+                continue;
 
+            if ( 0.26 > p || p > 0.53 )
+                continue;
+
+        auto rect = cv::boundingRect(contour);
+        cv::rectangle(ret, rect, cv::Scalar(70,255,90), 2);
+        ++found;
+    }
+    result.crayfishCount = found;
+    result.eggsCount = 0;
+
+    qDebug() << "Result ready, converting";
 
     switch ( ret.type() )
     {
-       // 8-bit, 4 channel
-       case CV_8UC4:
-       {
-          QImage image( ret.data,
-                        ret.cols, ret.rows,
-                        static_cast<int>(ret.step),
-                        QImage::Format_ARGB32 );
-          result.result = image.copy();
-       }
-
-       // 8-bit, 3 channel
-       case CV_8UC3:
-       {
-          QImage image( ret.data,
-                        ret.cols, ret.rows,
-                        static_cast<int>(ret.step),
-                        QImage::Format_RGB888 );
-          result.result = image.copy();
-       }
-
-       // 8-bit, 1 channel
-       case CV_8UC1:
-       {
-          QImage image( ret.data,
-                        ret.cols, ret.rows,
-                        static_cast<int>(ret.step),
-                        QImage::Format_Grayscale8 );
-          result.result = image.copy();
-       }
+    // 8-bit, 4 channel
+    case CV_8UC4:
+    {
+        QImage image( ret.data,
+                      ret.cols, ret.rows,
+                      static_cast<int>(ret.step),
+                      QImage::Format_ARGB32 );
+        result.result = image.copy();
+        break;
     }
 
+        // 8-bit, 3 channel
+    case CV_8UC3:
+    {
+        QImage image( ret.data,
+                      ret.cols, ret.rows,
+                      static_cast<int>(ret.step),
+                      QImage::Format_RGB888 );
+        result.result = image.copy();
+        break;
+    }
+
+        // 8-bit, 1 channel
+    case CV_8UC1:
+    {
+        QImage image( ret.data,
+                      ret.cols, ret.rows,
+                      static_cast<int>(ret.step),
+                      QImage::Format_Grayscale8 );
+        result.result = image.copy();
+        break;
+    }
+    }
+
+    qDebug() << "Result converted, send it";
     emit resultReady(result);
 }
 
-//QImage Mat2QImage(cv::Mat const& src)
-//{
-//     cv::Mat temp; // make the same cv::Mat
-//     cvtColor(src, temp, cv::COLOR_BGR2RGB); // cvtColor Makes a copt, that what i need
-//     QImage dest((const uchar *) temp.data, temp.cols, temp.rows, temp.step, QImage::Format_RGB888);
-//     dest.bits(); // enforce deep copy, see documentation
-//     // of QImage::QImage ( const uchar * data, int width, int height, Format format )
-//     return dest;
-//}
 
-//cv::Mat QImage2Mat(QImage const& src)
-//{
-//     cv::Mat tmp(src.height(),src.width(),CV_8UC3,(uchar*)src.bits(),src.bytesPerLine());
-//     cv::Mat result; // deep copy just in case (my lack of knowledge with open cv)
-//     cvtColor(tmp, result,cv::COLOR_BGR2RGB);
-//     return result;
-//}
+double median( cv::Mat channel )
+{
+    double m = (channel.rows*channel.cols) / 2;
+    int bin = 0;
+    double med = -1.0;
+
+    int histSize = 256;
+    float range[] = { 0, 256 };
+    const float* histRange = { range };
+    bool uniform = true;
+    bool accumulate = false;
+    cv::Mat hist;
+    cv::calcHist( &channel, 1, 0, cv::Mat(), hist, 1, &histSize, &histRange, uniform, accumulate );
+
+    for ( int i = 0; i < histSize && med < 0.0; ++i )
+    {
+        bin += cvRound( hist.at< float >( i ) );
+        if ( bin > m && med < 0.0 )
+            med = i;
+    }
+
+    return med;
+}

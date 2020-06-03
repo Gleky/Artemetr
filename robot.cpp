@@ -11,6 +11,8 @@
 Robot::Robot()
 {
     connect(&_imageAnalyzer, &ImageAnalyzer::resultReady, this, &Robot::resultReady, Qt::QueuedConnection);
+    _delay.setInterval(1000);
+    _delay.setSingleShot(true);
 }
 
 Robot::~Robot()
@@ -19,7 +21,8 @@ Robot::~Robot()
 void Robot::setCameraControl(CameraControl *camera)
 {
     _cameraController = camera;
-    connect(_cameraController, &CameraControl::cameraReachedTargetPoint, this, &Robot::cameraAtTargetPoint, Qt::QueuedConnection);
+    connect(_cameraController, &CameraControl::cameraReachedTargetPoint, &_delay, qOverload<>(&QTimer::start), Qt::QueuedConnection);
+    connect(&_delay, &QTimer::timeout, this, &Robot::cameraAtTargetPoint, Qt::QueuedConnection);
 }
 
 void Robot::setCameraView(CameraWidget *cameraWidget)
@@ -45,6 +48,7 @@ void Robot::setConsole(QTextEdit *console)
 
 void Robot::prepareToClose()
 {
+    qDebug() << "Start preparing to close";
     findTargetPoints(); //KOSTIL'
 
     if ( !_cameraController->isConnected() ){
@@ -52,6 +56,7 @@ void Robot::prepareToClose()
         return;
     }
 
+    qDebug() << "Parking camera";
     _cameraController->setBacklight(false);
     _cameraController->moveCamera(Point(xMaxPos-10,yMaxPos-10));
 
@@ -60,10 +65,13 @@ void Robot::prepareToClose()
 
 void Robot::start()
 {
+    qDebug() << "Start button pressed";
+
     _cameraController->setBacklight(true);
 
-    if ( !(_state == Started || _state == Paused) )
+    if ( !(_state == Started || _state == Paused) ) {
         findTargetPoints();
+    }
 
     _state = Started;
     getNext();
@@ -71,6 +79,7 @@ void Robot::start()
 
 void Robot::pause()
 {
+    qDebug() << "Pause button pressed";
     _state = Paused;
 
     if ( _state == Paused )
@@ -79,26 +88,31 @@ void Robot::pause()
 
 void Robot::stop()
 {
+    qDebug() << "Stoped";
     _state = Stoped;
     _targetPoints.clear();
+    emit done();
 }
 
 void Robot::getNext()
 {
+    qDebug() << "Send camera to next point";
     if (_targetPoints.size() > 0) {
         _cameraController->moveCamera(_targetPoints.first());
     } else {
-        _state = Stoped;
+        stop();
     }
 }
 
 void Robot::cameraAtTargetPoint()
 {
+    qDebug() << "Camera have arrived to target point";
     if ( _state == Stoped || _state == Closing) {
         if ( _state == Closing )
             QApplication::exit();
         return;
     }
+    qDebug() << "Try capture image";
     if (_cameraWidget->_capture != nullptr) //KOSTIL'
         _cameraWidget->_capture->capture(); //KOSTIL'
     _targetPoints.removeFirst();
@@ -107,12 +121,17 @@ void Robot::cameraAtTargetPoint()
 void Robot::imageCaptured(int id, const QImage &preview)
 {
     Q_UNUSED(id)
+    qDebug() << "Image captured, send it to analyzer";
     _imageAnalyzer.getResult(preview);
 }
 
 void Robot::resultReady(Result res)
 {
+    qDebug() << "Result received, send it for save and go to next point";
     emit result(res);
+
+    if (_targetPoints.size() == 0)
+        stop();
 
     if ( _state == Started )
         getNext();
@@ -147,4 +166,6 @@ void Robot::findTargetPoints()
     QTextStream stream(&points);
     stream << _console->toPlainText();
     points.close();
+
+    qDebug() << QString("%1 target points were found").arg(_targetPoints.size());
 }

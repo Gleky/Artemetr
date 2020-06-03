@@ -79,3 +79,5 @@ release/Artemetr.exe
 MovingCam_resource.rc
 Artemetr_resource.rc
 Artemetr.pro.user
+debug/Artemetr.exe
+debug/Artemetr.pdb
