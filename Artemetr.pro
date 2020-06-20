@@ -35,9 +35,9 @@ SOURCES += \
         comport.cpp \
         main.cpp \
         mainwindow.cpp \
-        pointscontrol.cpp \
         resultsaver.cpp \
-        robot.cpp
+        robot.cpp \
+        tablepoints.cpp
 
 HEADERS += \
         camera.h \
@@ -52,10 +52,10 @@ HEADERS += \
         common/keywords.h \
         mainwindow.h \
         common/point.h \
-        pointscontrol.h \
         resultsaver.h \
         robot.h \
-        struct_result.h
+        struct_result.h \
+        tablepoints.h
 
 FORMS += \
         mainwindow.ui

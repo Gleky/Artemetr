@@ -4,6 +4,8 @@
 #define connnectionSpeed 115200
 #define xMaxPos 465
 #define yMaxPos 450
+#define homeX 455
+#define homeY 440
 
 #define horisontalPackCount 5
 #define horisontalCellCount 4

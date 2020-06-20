@@ -4,6 +4,7 @@
 #include "irobot.h"
 #include "cameracontrol.h"
 #include "imageanalyzer.h"
+#include "tablepoints.h"
 
 #include <QTimer>
 
@@ -54,6 +55,8 @@ private:
     CameraWidget *_cameraWidget = nullptr;
 
     QTextEdit *_console = nullptr; //KOSTIL'
+
+    TabelPoints _pointsController;
 };
 
 #endif // ROBOT_H

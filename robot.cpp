@@ -58,7 +58,7 @@ void Robot::prepareToClose()
 
     qDebug() << "Parking camera";
     _cameraController->setBacklight(false);
-    _cameraController->moveCamera(Point(xMaxPos-10,yMaxPos-10));
+    _cameraController->moveCamera(Point(homeX,homeY));
 
     _state = Closing;
 }
