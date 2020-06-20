@@ -81,3 +81,5 @@ Artemetr_resource.rc
 Artemetr.pro.user
 debug/Artemetr.exe
 debug/Artemetr.pdb
+debug/Artemetr.vc.pdb
+debug/Artemetr_resource.res

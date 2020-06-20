@@ -35,6 +35,7 @@ SOURCES += \
         comport.cpp \
         main.cpp \
         mainwindow.cpp \
+        pointscontrol.cpp \
         resultsaver.cpp \
         robot.cpp
 
@@ -51,6 +52,7 @@ HEADERS += \
         common/keywords.h \
         mainwindow.h \
         common/point.h \
+        pointscontrol.h \
         resultsaver.h \
         robot.h \
         struct_result.h

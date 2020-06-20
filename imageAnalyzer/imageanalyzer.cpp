@@ -30,41 +30,57 @@ void ImageAnalyzer::compute(QImage img)
     cvtColor(inputImg, ret, cv::COLOR_BGRA2RGB);
 
     qDebug() << "Start analyze";
-    auto v = median(forStudy);
-    double sigma = 0.48;
-    int lower = int( std::max(0., (1-sigma)*v) );
-    int upper = int( std::min(255., (1+sigma)*v) );
+    cv::Mat temp;
+    cv::bilateralFilter(forStudy,temp,30,12,200);
+    forStudy = temp;
 
-    cv::Canny(forStudy,forStudy, lower,upper);
-
-    cv::Mat kerne = getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(2,2));
-    cv::morphologyEx(forStudy, forStudy, cv::MORPH_GRADIENT, kerne);
-    cv::morphologyEx(forStudy, forStudy, cv::MORPH_CLOSE, kerne);
-
+    cv::adaptiveThreshold(forStudy,forStudy, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY_INV, 55, 41);
 
     std::vector<std::vector<cv::Point> > contours;
     cv::findContours(forStudy, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_TC89_KCOS);
 
-    int found = 0;
     for ( int k = 0; k < contours.size(); ++k )
     {
         auto contour = contours[k];
 
-        double s = fabs( contourArea(contour) );
-        double p = arcLength( contour, false )/s;
-
-            if ( 190 > s || s > 524 )
-                continue;
-
-            if ( 0.26 > p || p > 0.53 )
-                continue;
-
+        double contArea = fabs( contourArea(contour) );
         auto rect = cv::boundingRect(contour);
-        cv::rectangle(ret, rect, cv::Scalar(70,255,90), 2);
-        ++found;
+        auto rectArea = rect.area();
+
+        int areaRatio = contArea/rectArea*100.;
+        int maxRatio = 55;
+        if ( areaRatio > maxRatio )
+        {
+            double aspectRatio = (rect.width*1.)/rect.height;
+            double delta = 1.4;
+            if ( 1/delta < aspectRatio && aspectRatio < 1*delta )
+            {
+                cv::rectangle(ret, rect, cv::Scalar(255,55,55), 1);
+                result.eggsCount += 1;
+                continue;
+            }
+        }
+
+        for (int i = 1; i < 3; ++i)
+        {
+            int contAreaLocal = contArea/i;
+            int rectAreaLocal = rectArea/i;
+
+            int minArea = 86;
+            int maxArea = 350;
+            if ( minArea > contAreaLocal || contAreaLocal > maxArea )
+                continue;
+
+            int minRectArea = 200;
+            int maxRectArea = 1370;
+            if ( minRectArea > rectAreaLocal || rectAreaLocal > maxRectArea )
+                continue;
+
+            cv::rectangle(ret, rect, cv::Scalar(70,255,90), 1);
+            result.crayfishCount += i;
+            break;
+        }
     }
-    result.crayfishCount = found;
-    result.eggsCount = 0;
 
     qDebug() << "Result ready, converting";
 

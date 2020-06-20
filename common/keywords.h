@@ -5,6 +5,14 @@
 #define xMaxPos 465
 #define yMaxPos 450
 
+#define horisontalPackCount 5
+#define horisontalCellCount 4
+#define verticalPackCount 3
+#define verticalCellCount 6
+#define packWidth 57
+#define packHeight 97
+#define tableMargin 2
+
 
 //Connection commands
 #define movingCamId "MOVING_CAM"
