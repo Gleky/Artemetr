@@ -4,15 +4,12 @@
 
 QList<Point> getPackList();
 
-TabelPoints::TabelPoints()
+TablePoints::TablePoints()
 {
     _packsForCheck = getPackList();
-
-    while ( hasNextCheckPoint() ) //test
-        currentCheckIs(true);     //test
 }
 
-bool TabelPoints::hasNextCheckPoint() const
+bool TablePoints::hasNextCheckPoint() const
 {
     bool ret = false;
 
@@ -22,7 +19,7 @@ bool TabelPoints::hasNextCheckPoint() const
     return ret;
 }
 
-const Point TabelPoints::nextCheckPoint() const
+const Point TablePoints::nextCheckPoint() const
 {
     Point checkPoint;
 
@@ -38,7 +35,7 @@ const Point TabelPoints::nextCheckPoint() const
     return checkPoint;
 }
 
-void TabelPoints::currentCheckIs(bool checkResult)
+void TablePoints::currentCheckIs(bool checkResult)
 {
     if ( _packsForCheck.isEmpty() )
         return;
@@ -58,7 +55,7 @@ void TabelPoints::currentCheckIs(bool checkResult)
 
 QList<Point> packTargetPoints(Point packPosition, bool rightToLeftDirection);
 
-void TabelPoints::getTargetPoints()
+void TablePoints::getTargetPoints()
 {
     while ( !_packList.isEmpty() )
     {
@@ -69,7 +66,7 @@ void TabelPoints::getTargetPoints()
     }
 }
 
-bool TabelPoints::hasNextTargetPoint() const
+bool TablePoints::hasNextTargetPoint() const
 {
     bool ret = false;
 
@@ -79,7 +76,7 @@ bool TabelPoints::hasNextTargetPoint() const
     return ret;
 }
 
-Point TabelPoints::nextTargetPoint()
+Point TablePoints::nextTargetPoint()
 {
     return _targetPoints.takeFirst();
 }

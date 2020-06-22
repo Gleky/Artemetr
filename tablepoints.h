@@ -5,10 +5,10 @@
 #include "point.h"
 
 
-class TabelPoints
+class TablePoints
 {
 public:
-    TabelPoints();
+    TablePoints();
 
     bool hasNextCheckPoint() const;
     const Point nextCheckPoint() const;
