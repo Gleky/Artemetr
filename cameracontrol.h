@@ -20,7 +20,8 @@ public:
 
     void setCamera(ICamera *camera);
     void moveCamera(Point newPos);
-    void setBacklight(bool on);
+    void goHome();
+    void lightOn();
 
     void publisherUpdated() override;
 

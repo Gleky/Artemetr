@@ -3,6 +3,7 @@
 
 #include <QKeyEvent>
 #include <QPainter>
+#include <keywords.h>
 
 QString const lightButtonStyle("QPushButton{background: rgb(180,180,180);"
                                            "color: #000;"
@@ -38,9 +39,7 @@ CameraControl::CameraControl(QWidget *parent)
 }
 
 CameraControl::~CameraControl()
-{
-//    wait(1000);
-}
+{}
 
 void CameraControl::setCamera(ICamera *camera)
 {
@@ -51,13 +50,24 @@ void CameraControl::moveCamera(Point newPos)
 {
     _camera->move(newPos);
     _goingToNewPos = true;
+
+#ifdef TEST
+    emit cameraReachedTargetPoint();
+    _scheme.update();
+#endif
 }
 
-void CameraControl::setBacklight(bool on)
+void CameraControl::goHome()
+{
+    moveCamera( Point(homeX,homeY) );
+    _lightButton.setChecked(false);
+}
+
+void CameraControl::lightOn()
 {
     if ( !_cameraConnected )
         return;
-    _lightButton.setChecked(on);
+    _lightButton.setChecked(true);
 }
 
 void CameraControl::publisherUpdated()
