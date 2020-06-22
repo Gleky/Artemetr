@@ -11,13 +11,16 @@ class IMAGEANALYZER_EXPORT ImageAnalyzer : public QObject
     Q_OBJECT
 public:
     ImageAnalyzer();
+    void checkPackPresence(const QImage &img);
     void getResult(const QImage &img);
 
 signals:
+    void packPresence( bool presence );
     void resultReady(Result);
 
 private:
-    void compute(QImage img);
+    void checkPresence(QImage img);
+    void computeResult(QImage img);
 };
 
 Q_DECLARE_METATYPE(Result)

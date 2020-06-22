@@ -9,18 +9,46 @@ ImageAnalyzer::ImageAnalyzer()
     qRegisterMetaType<Result>();
 }
 
-void ImageAnalyzer::getResult(const QImage &img)
+void ImageAnalyzer::checkPackPresence(const QImage &img)
 {
-    QtConcurrent::run(this, &ImageAnalyzer::compute,img);
+    QtConcurrent::run(this, &ImageAnalyzer::checkPresence,img);
 }
 
-double median( cv::Mat channel );
+void ImageAnalyzer::getResult(const QImage &img)
+{
+    QtConcurrent::run(this, &ImageAnalyzer::computeResult,img);
+}
 
-void ImageAnalyzer::compute(QImage img)
+
+
+void ImageAnalyzer::checkPresence(QImage img)
+{
+    bool presence = false;
+
+    QImage *src = &img;
+    cv::Mat inputImg( src->height(), src->width(), CV_8UC4, src->bits(), src->bytesPerLine());
+
+    cv::Mat forStudy;
+    cvtColor(inputImg, forStudy, cv::COLOR_BGR2GRAY);
+
+    auto val = cv::mean(forStudy);
+    double average = val[0];
+
+    if ( average < 200 )
+        presence = true;
+
+    emit packPresence( presence );
+}
+
+
+
+void ImageAnalyzer::computeResult(QImage img)
 {
     qDebug() << "Preparing to analyze";
     Result result;
     result.source = img.copy();
+    result.crayfishCount = 0;
+    result.eggsCount = 0;
 
     QImage *src = &img;
 
@@ -122,29 +150,4 @@ void ImageAnalyzer::compute(QImage img)
 
     qDebug() << "Result converted, send it";
     emit resultReady(result);
-}
-
-
-double median( cv::Mat channel )
-{
-    double m = (channel.rows*channel.cols) / 2;
-    int bin = 0;
-    double med = -1.0;
-
-    int histSize = 256;
-    float range[] = { 0, 256 };
-    const float* histRange = { range };
-    bool uniform = true;
-    bool accumulate = false;
-    cv::Mat hist;
-    cv::calcHist( &channel, 1, 0, cv::Mat(), hist, 1, &histSize, &histRange, uniform, accumulate );
-
-    for ( int i = 0; i < histSize && med < 0.0; ++i )
-    {
-        bin += cvRound( hist.at< float >( i ) );
-        if ( bin > m && med < 0.0 )
-            med = i;
-    }
-
-    return med;
 }
