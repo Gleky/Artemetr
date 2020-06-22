@@ -16,21 +16,26 @@ class CameraWidget : public QWidget
 public:
     explicit CameraWidget(QWidget *parent = nullptr);
 
+    void capture() const;
+
 public slots:
     void showResult(Result result);
+
+signals:
+    void imageCaptured(int id, const QImage &image);
 
 protected:
     void resizeEvent(QResizeEvent *event) override;
 
 private slots:
     void hideResult();
+    void imageReady(int id, const QImage &image);
 
 private:
     QCamera *_camera = nullptr;
     QCameraViewfinder _viewfinder;
     QLabel _resultLabel;
     QTimer _showResultTimer;
-public:
     QCameraImageCapture *_capture = nullptr;
 };
 

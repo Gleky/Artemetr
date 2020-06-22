@@ -24,7 +24,11 @@ CameraWidget::CameraWidget(QWidget *parent)
 
         for ( auto res : resolutions)
         {
+#ifdef TEST
+            if ( res.height() == 720 && res.width() == 1280)
+#else
             if ( res.height() == 960 && res.width() == 1280)
+#endif
                 needResolution = res;
         }
 
@@ -48,12 +52,26 @@ CameraWidget::CameraWidget(QWidget *parent)
         _capture->setCaptureDestination(QCameraImageCapture::CaptureToBuffer);
         _camera->start();
         _viewfinder.show();
+
+        connect(_capture, &QCameraImageCapture::imageCaptured, this, &CameraWidget::imageReady);
     }
     else
     {
         QMessageBox::warning(this, "Camera not found", "Please connect camera and restart app");
     }
 }
+
+void CameraWidget::capture() const
+{
+    if ( _capture != nullptr )
+        _capture->capture();
+}
+
+void CameraWidget::imageReady(int id, const QImage &image)
+{
+    emit imageCaptured(id, image);
+}
+
 
 void CameraWidget::showResult(Result result)
 {
@@ -76,3 +94,5 @@ void CameraWidget::hideResult()
     _viewfinder.show();
     _resultLabel.hide();
 }
+
+
