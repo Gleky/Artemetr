@@ -7,6 +7,7 @@
 #include <QPainter>
 #include <QKeyEvent>
 
+
 CameraSchemeWidget::CameraSchemeWidget(QWidget *parent)
     : QWidget(parent)
 {

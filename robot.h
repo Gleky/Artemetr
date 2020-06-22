@@ -1,62 +1,52 @@
 #ifndef ROBOT_H
 #define ROBOT_H
 
-#include "irobot.h"
+//#include "irobot.h"
 #include "cameracontrol.h"
 #include "imageanalyzer.h"
 #include "tablepoints.h"
 
 #include <QTimer>
 
-class QTextEdit; //KOSTIL'
+
 class ImageAnalyzer;
 class CameraWidget;
 
-class Robot : public QObject, public IRobot
+class Robot : public QObject
 {
     Q_OBJECT
 public:
-    Robot();
+    Robot(CameraControl *camera,CameraWidget *cameraWidget);
     ~Robot();
-
-    void setCameraControl(CameraControl *camera);
-    void setCameraView(CameraWidget *cameraWidget);
-
-    void setConsole(QTextEdit *console); //KOSTIL'
 
     void prepareToClose();
 
 public slots:
-    void start() override;
-    void pause() override;
-    void stop() override;
+    void start();
+    void stop();
 
     void cameraAtTargetPoint();
+    void imageCaptured(int id, const QImage &image);
+    void packPresence( bool presence );
     void resultReady(Result res);
-
-    void imageCaptured(int id, const QImage &preview);
 
 signals:
     void result(Result);
     void done();
 
 private:
-    void findTargetPoints();
-    QVector<Point> _targetPoints;
-    void getNext();
-    QTimer _delay;
+    enum RobotState {Start, TableCheck, Stop, Close};
+    RobotState _state = Stop;
 
-    enum RobotState {Started, Paused, Stoped, Closing};
-    RobotState _state = Stoped;
+    TablePoints *_points = new TablePoints;
+    void next();
 
     ImageAnalyzer _imageAnalyzer;
 
-    CameraControl *_cameraController = nullptr;
-    CameraWidget *_cameraWidget = nullptr;
-
-    QTextEdit *_console = nullptr; //KOSTIL'
-
-    TabelPoints _pointsController;
+    CameraControl *const _cameraController = nullptr;
+    CameraWidget *const _cameraWidget = nullptr;
+    QTimer _delay;
+    Robot();
 };
 
 #endif // ROBOT_H

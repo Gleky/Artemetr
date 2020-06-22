@@ -12,6 +12,7 @@
 const QString logFileName = "../log.txt";
 void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
+    Q_UNUSED(context);
     QByteArray localMsg = msg.toLocal8Bit();
 
     static QMutex mutex;
@@ -68,11 +69,8 @@ int main(int argc, char *argv[])
     CameraWidget cameraWidget;
     window.setCameraView(&cameraWidget);
 
-    Robot robot;
-    robot.setCameraControl(&cameraController);
-    robot.setCameraView(&cameraWidget);
+    Robot robot(&cameraController, &cameraWidget);
     window.connectButtons(&robot);
-    robot.setConsole(window.console()); //KOSTIL'
 
     ResultSaver saver;
     saver.setFolder("results");

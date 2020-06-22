@@ -46,13 +46,6 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButtonPause">
-        <property name="text">
-         <string>Pause / Next</string>
-        </property>
-       </widget>
-      </item>
-      <item>
        <widget class="QPushButton" name="pushButtonStop">
         <property name="text">
          <string>Stop</string>
@@ -61,21 +54,24 @@
       </item>
      </layout>
     </item>
+    <item row="0" column="0" rowspan="3">
+     <layout class="QVBoxLayout" name="frameCameraView"/>
+    </item>
     <item row="0" column="1">
      <layout class="QVBoxLayout" name="frameCameraPos"/>
     </item>
     <item row="1" column="1">
-     <widget class="QTextEdit" name="textEdit">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
+     <spacer name="verticalSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
       </property>
-     </widget>
-    </item>
-    <item row="0" column="0" rowspan="3">
-     <layout class="QVBoxLayout" name="frameCameraView"/>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>40</height>
+       </size>
+      </property>
+     </spacer>
     </item>
    </layout>
   </widget>

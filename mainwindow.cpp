@@ -27,21 +27,16 @@ void MainWindow::setCameraView(QWidget *cameraview)
 void MainWindow::setCameraPos(QWidget *camerapos)
 {
     ui->frameCameraPos->addWidget(camerapos);
-    camerapos->setFixedSize(300,320);
+    camerapos->setFixedSize(400,420);
 }
 
 void MainWindow::connectButtons(Robot *robot)
 {
     _robot = robot;
     connect(ui->pushButtonStart, &QPushButton::clicked, robot, &Robot::start);
-    connect(ui->pushButtonPause, &QPushButton::clicked, robot, &Robot::pause);
     connect(ui->pushButtonStop, &QPushButton::clicked, robot, &Robot::stop);
 }
 
-QTextEdit *MainWindow::console()
-{
-    return ui->textEdit;
-}
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
@@ -55,7 +50,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     _robot->prepareToClose();
     event->ignore();
     firstCall = false;
-    QTimer::singleShot(10000, this, &MainWindow::close);
+    QTimer::singleShot(6000, this, &MainWindow::close);
     hide();
 }
 

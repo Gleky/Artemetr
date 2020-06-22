@@ -4,125 +4,141 @@
 #include "keywords.h"
 
 #include <QApplication>
-
-#include <QTextEdit> //KOSTIL'
 #include <QFile>
 
-Robot::Robot()
+// NEED TO SPLIT INTO STATE OBJECTS !!!
+
+Robot::Robot(CameraControl *camera, CameraWidget *cameraWidget)
+    :_cameraController(camera),
+      _cameraWidget(cameraWidget)
 {
     connect(&_imageAnalyzer, &ImageAnalyzer::resultReady, this, &Robot::resultReady, Qt::QueuedConnection);
+    connect(&_imageAnalyzer, &ImageAnalyzer::packPresence, this, &Robot::packPresence, Qt::QueuedConnection);
     _delay.setInterval(1000);
     _delay.setSingleShot(true);
+
+    connect(_cameraController, &CameraControl::cameraReachedTargetPoint, &_delay, qOverload<>(&QTimer::start), Qt::QueuedConnection);
+    connect(&_delay, &QTimer::timeout, this, &Robot::cameraAtTargetPoint, Qt::QueuedConnection);
+
+    connect(cameraWidget, &CameraWidget::imageCaptured, this, &Robot::imageCaptured);
+    connect(this, &Robot::result, _cameraWidget, &CameraWidget::showResult, Qt::QueuedConnection);
 }
 
 Robot::~Robot()
 {}
 
-void Robot::setCameraControl(CameraControl *camera)
-{
-    _cameraController = camera;
-    connect(_cameraController, &CameraControl::cameraReachedTargetPoint, &_delay, qOverload<>(&QTimer::start), Qt::QueuedConnection);
-    connect(&_delay, &QTimer::timeout, this, &Robot::cameraAtTargetPoint, Qt::QueuedConnection);
-}
-
-void Robot::setCameraView(CameraWidget *cameraWidget)
-{
-    _cameraWidget = cameraWidget;
-
-    if (_cameraWidget->_capture != nullptr)
-        connect(cameraWidget->_capture, &QCameraImageCapture::imageCaptured, this, &Robot::imageCaptured);
-    connect(this, &Robot::result, _cameraWidget, &CameraWidget::showResult, Qt::QueuedConnection);
-}
-
-void Robot::setConsole(QTextEdit *console)
-{
-    _console = console;
-
-    QFile points("../Points.txt");
-    points.open(QIODevice::ReadWrite);
-    QTextStream stream(&points);
-    auto text = stream.readAll();
-    _console->setText(text);
-    points.close();
-}
-
-void Robot::prepareToClose()
-{
-    qDebug() << "Start preparing to close";
-    findTargetPoints(); //KOSTIL'
-
-    if ( !_cameraController->isConnected() ){
-        QApplication::exit();
-        return;
-    }
-
-    qDebug() << "Parking camera";
-    _cameraController->setBacklight(false);
-    _cameraController->moveCamera(Point(homeX,homeY));
-
-    _state = Closing;
-}
-
 void Robot::start()
 {
     qDebug() << "Start button pressed";
+    switch(_state)
+    {
+    case Start:
+    case TableCheck:
+        break;
 
-    _cameraController->setBacklight(true);
+    case Stop:
+        _cameraController->lightOn();
+        _state = TableCheck;
+        next();
+        break;
 
-    if ( !(_state == Started || _state == Paused) ) {
-        findTargetPoints();
+    case Close:
+        break;
     }
-
-    _state = Started;
-    getNext();
-}
-
-void Robot::pause()
-{
-    qDebug() << "Pause button pressed";
-    _state = Paused;
-
-    if ( _state == Paused )
-        getNext();
 }
 
 void Robot::stop()
 {
     qDebug() << "Stoped";
-    _state = Stoped;
-    _targetPoints.clear();
+
+    _state = Stop;
+
+    delete _points;
+    _points = new TablePoints;
+
     emit done();
 }
 
-void Robot::getNext()
+void Robot::next()
 {
     qDebug() << "Send camera to next point";
-    if (_targetPoints.size() > 0) {
-        _cameraController->moveCamera(_targetPoints.first());
-    } else {
-        stop();
+
+    switch(_state)
+    {
+    case Start:
+        if ( _points->hasNextTargetPoint() )
+            _cameraController->moveCamera( _points->nextTargetPoint() );
+        else
+            stop();
+        break;
+
+    case TableCheck:
+        if ( _points->hasNextCheckPoint() )
+            _cameraController->moveCamera( _points->nextCheckPoint() );
+        else
+        {
+            _state = Start;
+            next();
+        }
+        break;
+
+    case Stop:
+    case Close:
+        break;
     }
 }
 
 void Robot::cameraAtTargetPoint()
 {
     qDebug() << "Camera have arrived to target point";
-    if ( _state == Stoped || _state == Closing) {
-        if ( _state == Closing )
-            QApplication::exit();
-        return;
+
+    switch(_state)
+    {
+    case Start:
+        qDebug() << "Try capture target image";
+        _cameraWidget->capture();
+        break;
+
+    case TableCheck:
+        qDebug() << "Try capture check image";
+        _cameraWidget->capture();
+        break;
+
+    case Close:
+        QApplication::exit();
+        break;
+
+    case Stop:
+        break;
     }
-    qDebug() << "Try capture image";
-    if (_cameraWidget->_capture != nullptr) //KOSTIL'
-        _cameraWidget->_capture->capture(); //KOSTIL'
-    _targetPoints.removeFirst();
 }
 
-void Robot::imageCaptured(int id, const QImage &preview)
+void Robot::imageCaptured(int id, const QImage &image)
 {
     Q_UNUSED(id)
     qDebug() << "Image captured, send it to analyzer";
-    _imageAnalyzer.getResult(preview);
+
+    switch(_state)
+    {
+    case Start:
+        _imageAnalyzer.getResult(image);
+        break;
+
+    case TableCheck:
+        _imageAnalyzer.checkPackPresence(image);
+        break;
+
+    case Stop:
+    case Close:
+        break;
+    }
+
+}
+
+void Robot::packPresence(bool presence)
+{
+    _points->currentCheckIs(presence);
+    next();
 }
 
 void Robot::resultReady(Result res)
@@ -130,42 +146,30 @@ void Robot::resultReady(Result res)
     qDebug() << "Result received, send it for save and go to next point";
     emit result(res);
 
-    if (_targetPoints.size() == 0)
-        stop();
+    switch(_state)
+    {
+    case Start:
+        next();
+        break;
 
-    if ( _state == Started )
-        getNext();
+    case TableCheck:
+    case Stop:
+    case Close:
+        break;
+    }
 }
 
-void Robot::findTargetPoints()
+void Robot::prepareToClose()
 {
-    _targetPoints.clear();
+    qDebug() << "Start preparing to close";
+    emit done();
 
-    QString text = _console->toPlainText();
-    auto list = text.split("\n", QString::SkipEmptyParts);
-
-    while (list.size() > 0)
-    {
-        auto pair = list.takeFirst().split(" ",  QString::SkipEmptyParts);
-        if (pair.size() > 1)
-        {
-            bool checkX = false;
-            int x = pair.takeFirst().toInt(&checkX);
-            bool checkY = false;
-            int y = pair.takeFirst().toInt(&checkY);
-            if (checkX && checkY)
-            {
-                Point point = {x,y};
-                _targetPoints.append(point);
-            }
-        }
+    if ( !_cameraController->isConnected() ){
+        QApplication::exit();
+        return;
     }
 
-    QFile points("../Points.txt");
-    points.open(QIODevice::ReadWrite);
-    QTextStream stream(&points);
-    stream << _console->toPlainText();
-    points.close();
-
-    qDebug() << QString("%1 target points were found").arg(_targetPoints.size());
+    qDebug() << "Parking camera";
+    _cameraController->goHome();
+    _state = Close;
 }
