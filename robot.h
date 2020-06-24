@@ -28,10 +28,10 @@ public slots:
     void cameraAtTargetPoint();
     void imageCaptured(int id, const QImage &image);
     void packPresence( bool presence );
-    void resultReady(Result res);
+    void resultReady(CellResult res);
 
 signals:
-    void result(Result);
+    void result(CellResult);
     void done();
 
 private:

@@ -73,7 +73,7 @@ void CameraWidget::imageReady(int id, const QImage &image)
 }
 
 
-void CameraWidget::showResult(Result result)
+void CameraWidget::showResult(CellResult result)
 {
     _resultLabel.setPixmap(QPixmap::fromImage(result.result).scaled(_resultLabel.size(),Qt::KeepAspectRatio));
     _resultLabel.show();

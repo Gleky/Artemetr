@@ -19,7 +19,7 @@ public:
     void capture() const;
 
 public slots:
-    void showResult(Result result);
+    void showResult(CellResult result);
 
 signals:
     void imageCaptured(int id, const QImage &image);

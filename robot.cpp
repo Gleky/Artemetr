@@ -141,7 +141,7 @@ void Robot::packPresence(bool presence)
     next();
 }
 
-void Robot::resultReady(Result res)
+void Robot::resultReady(CellResult res)
 {
     qDebug() << "Result received, send it for save and go to next point";
     emit result(res);

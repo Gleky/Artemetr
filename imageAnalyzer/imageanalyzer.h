@@ -16,7 +16,7 @@ public:
 
 signals:
     void packPresence( bool presence );
-    void resultReady(Result);
+    void resultReady(CellResult);
 
 private:
     void checkPresence(QImage img);

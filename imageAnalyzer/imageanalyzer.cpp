@@ -6,7 +6,7 @@
 
 ImageAnalyzer::ImageAnalyzer()
 {
-    qRegisterMetaType<Result>();
+    qRegisterMetaType<CellResult>();
 }
 
 void ImageAnalyzer::checkPackPresence(const QImage &img)
@@ -45,7 +45,7 @@ void ImageAnalyzer::checkPresence(QImage img)
 void ImageAnalyzer::computeResult(QImage img)
 {
     qDebug() << "Preparing to analyze";
-    Result result;
+    CellResult result;
     result.source = img.copy();
     result.crayfishCount = 0;
     result.eggsCount = 0;

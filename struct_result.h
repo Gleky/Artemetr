@@ -3,7 +3,7 @@
 
 #include <QImage>
 
-struct Result
+struct CellResult
 {
     int crayfishCount = -1;
     int eggsCount = -1;
