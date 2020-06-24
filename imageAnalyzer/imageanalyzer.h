@@ -23,6 +23,6 @@ private:
     void computeResult(QImage img);
 };
 
-Q_DECLARE_METATYPE(Result)
+Q_DECLARE_METATYPE(CellResult)
 
 #endif // IMAGEANALYZER_H

@@ -57,6 +57,7 @@ void ImageAnalyzer::computeResult(QImage img)
     cvtColor(inputImg, forStudy, cv::COLOR_BGR2GRAY);
     cvtColor(inputImg, ret, cv::COLOR_BGRA2RGB);
 
+#ifndef TEST
     qDebug() << "Start analyze";
     cv::Mat temp;
     cv::bilateralFilter(forStudy,temp,30,12,200);
@@ -109,6 +110,7 @@ void ImageAnalyzer::computeResult(QImage img)
             break;
         }
     }
+#endif
 
     qDebug() << "Result ready, converting";
 
