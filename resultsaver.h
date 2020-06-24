@@ -9,20 +9,27 @@ class ResultSaver : public QObject
 {
     Q_OBJECT
 public:
-    ResultSaver();
-    void setFolder(QString folderName);
+    ResultSaver(QString folderName);
 
 public slots:
-    void saveResult(Result result);
-    void setDone();
+    void saveResult(CellResult result);
+//    void savePackResultsText() const;
+    void saveSummaryResultsText();
+
 
 private:
-    QString _savePath;
-    QString _sourcePath = "../sources/";
+    const QString _savePath;
+    const QString _sourcePath = "../sources/";
 
     int _crayfishCount = 0;
     int _eggsCount = 0;
-    bool _lastResultSaved = true;
+    bool _resultSaved = true;
+
+//    int _lastCrayfishCount = 0;
+//    int _lastEggsCount = 0;
+
+    void saveResults(QString fileName, char splitter) const;
+    void resetCounters();
 };
 
 #endif // RESULTSAVER_H

@@ -72,10 +72,9 @@ int main(int argc, char *argv[])
     Robot robot(&cameraController, &cameraWidget);
     window.connectButtons(&robot);
 
-    ResultSaver saver;
-    saver.setFolder("results");
+    ResultSaver saver("results");
     saver.connect(&robot, &Robot::result, &saver, &ResultSaver::saveResult);
-    saver.connect(&robot, &Robot::done, &saver, &ResultSaver::setDone);
+    saver.connect(&robot, &Robot::done, &saver, &ResultSaver::saveSummaryResultsText);
 
     qDebug() << "Init done";
 
