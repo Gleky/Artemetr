@@ -13,7 +13,7 @@ public:
 
 public slots:
     void saveResult(CellResult result);
-//    void savePackResultsText() const;
+    void savePackResultsText();
     void saveSummaryResultsText();
 
 
@@ -25,10 +25,13 @@ private:
     int _eggsCount = 0;
     bool _resultSaved = true;
 
-//    int _lastCrayfishCount = 0;
-//    int _lastEggsCount = 0;
+    int _lastCrayfishCount = 0;
+    int _lastEggsCount = 0;
 
-    void saveResults(QString fileName, char splitter) const;
+    void saveResults(QString fileName, QStringList line, char splitter) const;
+
+    void writeTitle();
+    void writeLine(QString filePath, QStringList line, char splitter) const;
     void resetCounters();
 };
 

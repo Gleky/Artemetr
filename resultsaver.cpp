@@ -29,17 +29,35 @@ void ResultSaver::saveResult(CellResult result)
     _eggsCount += result.eggsCount;
 
     if ( _resultSaved )
+    {
         _resultSaved = false;
+        writeTitle();
+    }
+#ifdef TEST
+    static int i = 0;
+    ++i;
+    if (i%12 == 0)
+        savePackResultsText();
+#endif
 }
 
 
 void createSaveFileIfNotExists(QString filePath, char splitter);
 
-//void ResultSaver::savePackResultsText() const
-//{
-//    const int currentCryfishCount = _crayfishCount - _lastCrayfishCount;
-//    const int currentEggCount = _eggsCount - _lastEggsCount;
-//}
+void ResultSaver::savePackResultsText()
+{
+    const int currentCryfishCount = _crayfishCount - _lastCrayfishCount;
+    const int currentEggCount = _eggsCount - _lastEggsCount;
+
+    const QString fileName = "results_log";
+    const QStringList line = {" ", QString::number(_crayfishCount), QString::number(_eggsCount)};
+
+    saveResults(fileName, line, ',');
+    saveResults(fileName+"_old_format", line, ';');
+
+    _lastCrayfishCount = _crayfishCount;
+    _lastEggsCount = _eggsCount;
+}
 
 void ResultSaver::saveSummaryResultsText()
 {
@@ -47,10 +65,10 @@ void ResultSaver::saveSummaryResultsText()
         return;
 
     const QString fileName = "results_log";
+    const QStringList line = {"TOTAL", QString::number(_crayfishCount), QString::number(_eggsCount)+'\n'};
 
-    saveResults(fileName,',');
-    saveResults(fileName+"_old_format", ';');
-    saveResults(fileName+"_tabtest", '\t');
+    saveResults(fileName, line, ',');
+    saveResults(fileName+"_old_format", line, ';');
 
     QMessageBox::information(nullptr, "Done", "Crayfish: " + QString::number(_crayfishCount)+'\n'+
                                               "Eggs: " + QString::number(_eggsCount));
@@ -58,21 +76,37 @@ void ResultSaver::saveSummaryResultsText()
     resetCounters();
 }
 
-void ResultSaver::saveResults(QString fileName, char splitter) const
+void ResultSaver::saveResults(QString fileName, QStringList line, char splitter) const
 {
     const QString saveFilePath = "../"+fileName+".csv";
-
     createSaveFileIfNotExists(saveFilePath, splitter);
-    QFile saveFile( saveFilePath );
+    writeLine(saveFilePath, line, splitter);
+}
 
+void ResultSaver::writeTitle()
+{
+    const QString fileName = "results_log";
+    const QString date = QDateTime::currentDateTime().toString("yyyy.MM.dd hh:mm:ss");
+    const QStringList line = {date, "Crayfish", "Eggs"};
+
+    saveResults(fileName, line, ',');
+    saveResults(fileName+"_old_format", line, ';');
+}
+
+void ResultSaver::writeLine(QString filePath, QStringList line, char splitter) const
+{
+    QFile saveFile( filePath );
     if ( !saveFile.open(QIODevice::Append) )
         return;
 
     QTextStream stream(&saveFile);
 
-    QString date = QDateTime::currentDateTime().toString("yyyy.MM.dd hh:mm:ss");
-    stream << date << splitter << QString::number(_crayfishCount) << splitter << QString::number(_eggsCount) << '\n';
-
+    for (const auto &cellText : line )
+    {
+        stream << cellText;
+        stream << splitter;
+    }
+    stream << '\n';
     saveFile.close();
 }
 
@@ -81,6 +115,9 @@ void ResultSaver::resetCounters()
     _crayfishCount = 0;
     _eggsCount = 0;
     _resultSaved = true;
+
+    _lastCrayfishCount = 0;
+    _lastEggsCount = 0;
 }
 
 void createSaveFileIfNotExists(QString filePath, char splitter)
@@ -89,12 +126,6 @@ void createSaveFileIfNotExists(QString filePath, char splitter)
     if ( saveFile.exists() )
         return;
 
-    if ( !saveFile.open(QIODevice::ReadWrite) )
+    if ( !saveFile.open(QIODevice::Append) )
         return;
-
-    QTextStream stream(&saveFile);
-
-    stream << "Date" << splitter << "Crayfish" << splitter << "Eggs\n";
-
-    saveFile.close();
 }
