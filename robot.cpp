@@ -162,7 +162,8 @@ void Robot::resultReady(Result res)
 void Robot::prepareToClose()
 {
     qDebug() << "Start preparing to close";
-    emit done();
+    if ( _state == Start )
+        emit done();
 
     if ( !_cameraController->isConnected() ){
         QApplication::exit();
