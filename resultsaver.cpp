@@ -33,12 +33,6 @@ void ResultSaver::saveResult(CellResult result)
         _resultSaved = false;
         writeTitle();
     }
-#ifdef TEST
-    static int i = 0;
-    ++i;
-    if (i%12 == 0)
-        savePackResultsText();
-#endif
 }
 
 

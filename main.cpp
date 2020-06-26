@@ -74,6 +74,7 @@ int main(int argc, char *argv[])
 
     ResultSaver saver("results");
     saver.connect(&robot, &Robot::result, &saver, &ResultSaver::saveResult);
+    saver.connect(&robot, &Robot::packDone, &saver, &ResultSaver::savePackResultsText);
     saver.connect(&robot, &Robot::done, &saver, &ResultSaver::saveSummaryResultsText);
 
     qDebug() << "Init done";

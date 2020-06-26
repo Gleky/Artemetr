@@ -33,6 +33,7 @@ public slots:
 signals:
     void result(CellResult);
     void done();
+    void packDone();
 
 private:
     enum RobotState {Start, TableCheck, Stop, Close};

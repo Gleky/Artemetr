@@ -146,6 +146,9 @@ void Robot::resultReady(CellResult res)
     qDebug() << "Result received, send it for save and go to next point";
     emit result(res);
 
+    if ( _points->packDone() )
+        emit packDone();
+
     switch(_state)
     {
     case Start:

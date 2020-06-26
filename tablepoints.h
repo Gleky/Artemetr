@@ -16,9 +16,9 @@ public:
 
     bool hasNextTargetPoint() const;
     Point nextTargetPoint();
+    bool packDone() const;
 
 private:
-//    void getPackList();
     QList<Point> _packList;
 
     QList<Point> _packsForCheck;

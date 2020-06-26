@@ -81,6 +81,13 @@ Point TablePoints::nextTargetPoint()
     return _targetPoints.takeFirst();
 }
 
+bool TablePoints::packDone() const
+{
+    if ( ( _targetPoints.size() % (verticalCellCount*horisontalCellCount) ) == 0 )
+        return true;
+    return false;
+}
+
 
 
 
