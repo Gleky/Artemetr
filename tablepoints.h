@@ -26,3 +26,19 @@ private:
     void getTargetPoints();
     QList<Point> _targetPoints;
 };
+
+
+class PackCornerPoints
+{
+public:
+    explicit PackCornerPoints(Point packPosition);
+
+    QList<Point> points() const;
+    Point topLeft() const;
+    Point topRight() const;
+    Point botLeft() const;
+    Point botRight() const;
+
+private:
+    const QList<Point> _cellPoints;
+};

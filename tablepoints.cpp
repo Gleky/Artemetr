@@ -152,3 +152,39 @@ QList<Point> packTargetPoints(Point packPosition, bool rightToLeftDirection)
 
     return targetPoints;
 }
+
+PackCornerPoints::PackCornerPoints(Point packPosition)
+    :_cellPoints( packTargetPoints(packPosition, false) )
+{
+
+}
+
+QList<Point> PackCornerPoints::points() const
+{
+    QList<Point> cornerPoints;
+    cornerPoints.append( topLeft() );
+    cornerPoints.append( topRight() );
+    cornerPoints.append( botRight() );
+    cornerPoints.append( botLeft() );
+
+}
+
+Point PackCornerPoints::topLeft() const
+{
+    return  _cellPoints[verticalCellCount-1];
+}
+
+Point PackCornerPoints::topRight() const
+{
+    return _cellPoints[verticalCellCount*horisontalCellCount - verticalCellCount];
+}
+
+Point PackCornerPoints::botLeft() const
+{
+    return _cellPoints[0];
+}
+
+Point PackCornerPoints::botRight() const
+{
+    return _cellPoints[verticalCellCount*horisontalCellCount -1];
+}
