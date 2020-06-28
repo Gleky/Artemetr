@@ -1,19 +1,41 @@
 #include "manualcontrolwidget.h"
 
+#include "tablepoints.h"
+#include "cameracontrol.h"
+
 #include <QGridLayout>
 #include <QSpinBox>
 #include <QPushButton>
 
 ManualControlWidget::ManualControlWidget(CameraControl *cameraController, QWidget *parent)
     : QWidget(parent),
-      _controller(cameraController)
+      _camera(cameraController)
 {
     setupWidget();
 }
 
 void ManualControlWidget::goToCorner()
 {
+    static int packIndex = 0;
+    static QList<Point> corners;
+    static int cornerIndex = 0;
 
+    if ( packIndex != _packIndex )
+    {
+        packIndex = _packIndex;
+        cornerIndex = 0;
+        const Point packPosition( (_packIndex-1)%5, (_packIndex-1)/5 ); //HARDCODE!!
+
+        PackCornerPoints packCorners( packPosition );
+        corners = packCorners.points();
+    }
+
+    _camera->moveToWihtoutSignal( corners[cornerIndex] );
+
+    if ( cornerIndex < 3 )
+        ++cornerIndex;
+    else
+        cornerIndex = 0;
 }
 
 void ManualControlWidget::indexCanged(int index)

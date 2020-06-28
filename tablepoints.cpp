@@ -162,10 +162,10 @@ PackCornerPoints::PackCornerPoints(Point packPosition)
 QList<Point> PackCornerPoints::points() const
 {
     QList<Point> cornerPoints;
+    cornerPoints.append( botLeft() );
     cornerPoints.append( topLeft() );
     cornerPoints.append( topRight() );
     cornerPoints.append( botRight() );
-    cornerPoints.append( botLeft() );
     return cornerPoints;
 }
 

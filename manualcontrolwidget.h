@@ -20,7 +20,7 @@ private slots:
 private:
     void setupWidget();
 
-    CameraControl *const _controller = nullptr;
+    CameraControl *const _camera = nullptr;
     int _packIndex = 1;
 };
 
