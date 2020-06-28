@@ -1,5 +1,6 @@
 #include "cameracontrol.h"
 #include "icamera.h"
+#include "comport.h"
 
 #include <QKeyEvent>
 #include <QPainter>
@@ -19,55 +20,68 @@ QString const lightButtonStyle("QPushButton{background: rgb(180,180,180);"
                                "QPushButton:checked:pressed {background: rgb(230,230,230);}"
                                );
 
-CameraControl::CameraControl(QWidget *parent)
-    :QFrame(parent),
-    _scheme(this),
-    _lightButton(this)
+QString const borderStyle("QFrame{background-color: rgb(250,250,250);"
+                           "border-radius: 3px;"
+                           "border: 1px solid rgb(220,220,220);}");
+
+CameraControl::CameraControl(ICamera *camera, const PC::ComPort *port)
+    :_camera(camera)
+//    _scheme(this),
+//    _lightButton(this)
 {
-    _lightButton.setText("Light - OFF");
-    _lightButton.setCheckable(true);
-    _lightButton.setStyleSheet(lightButtonStyle);
-    connect(&_lightButton, &QPushButton::toggled, this, &CameraControl::lightButtonToggled);
+    connect(port, &PC::ComPort::connected, this, &CameraControl::cameraConnected);
+    connect(port, &PC::ComPort::disconnected, this, &CameraControl::cameraDisconnected);
+//    _lightButton.setText("Light - OFF");
+//    _lightButton.setCheckable(true);
+//    _lightButton.setStyleSheet(lightButtonStyle);
+//    connect(&_lightButton, &QPushButton::toggled, this, &CameraControl::lightButtonToggled);
 
-    _scheme.setController(this);
-    connect(&_scheme, &CameraSchemeWidget::moveToPoint, this, &CameraControl::moveToPoint);
+//    _scheme.setController(this);
+//    connect(&_scheme, &CameraSchemeWidget::moveToPoint, this, &CameraControl::moveToPoint);
 
-    setStyleSheet("QFrame{background-color: rgb(250,250,250);"
-                         "border-radius: 3px;"
-                         "border: 1px solid rgb(220,220,220);}");
+//    setStyleSheet("QFrame{background-color: rgb(250,250,250);"
+//                         "border-radius: 3px;"
+//                         "border: 1px solid rgb(220,220,220);}");
 
 }
 
-CameraControl::~CameraControl()
-{}
+//void CameraControl::setCamera(ICamera *camera)
+//{
+//    _camera = camera;
+//}
 
-void CameraControl::setCamera(ICamera *camera)
+void CameraControl::moveTo(Point newPos)
 {
-    _camera = camera;
-}
-
-void CameraControl::moveCamera(Point newPos)
-{
-    _camera->move(newPos);
+    moveToWihtoutSignal(newPos);
+#ifndef TEST
     _goingToNewPos = true;
-
-#ifdef TEST
+#else
     emit cameraReachedTargetPoint();
-    _scheme.update();
+    emit cameraUpdated();
 #endif
+}
+
+void CameraControl::moveToWihtoutSignal(Point newPos)
+{
+    if ( _goingToNewPos )
+        return;
+
+    _camera->move(newPos);
 }
 
 void CameraControl::goHome()
 {
-    moveCamera( Point(homeX,homeY) );
-    _lightButton.setChecked(false);
+    moveTo( Point(homeX,homeY) );
+    _camera->setBacklight(Off);
+//    _lightButton.setChecked(false);
 }
 
 void CameraControl::lightOn()
 {
     if ( !_cameraConnected )
         return;
-    _lightButton.setChecked(true);
+    _camera->setBacklight(On);
+//    _lightButton.setChecked(true);
 }
 
 void CameraControl::publisherUpdated()
@@ -82,7 +96,7 @@ void CameraControl::publisherUpdated()
             emit cameraReachedTargetPoint();
         }
     }
-    _scheme.update();
+    emit cameraUpdated();
 }
 
 Point CameraControl::currentPos() const
@@ -109,43 +123,43 @@ bool CameraControl::isConnected() const
 void CameraControl::cameraConnected()
 {
     _cameraConnected = true;
-    _scheme.update();
+    emit cameraUpdated();
 }
 
 void CameraControl::cameraDisconnected()
 {
     _cameraConnected = false;
-    _scheme.update();
+    emit cameraUpdated();
 }
 
-void CameraControl::moveToPoint(const Point &newPos)
-{
-    if ( _goingToNewPos )
-        return;
+//void CameraControl::moveToPoint(const Point &newPos)
+//{
+//    if ( _goingToNewPos )
+//        return;
 
-    if ( newPos == _camera->targetPos() )
-        return;
+//    if ( newPos == _camera->targetPos() )
+//        return;
 
-    _camera->move(newPos);
-    _scheme.update();
-}
+//    _camera->move(newPos);
+//    _scheme.update();
+//}
 
-void CameraControl::lightButtonToggled(bool checked)
-{
-    if ( checked ) {
-        _lightButton.setText("Light - ON");
-        _camera->setBacklight(On);
-    } else {
-        _lightButton.setText("Light - OFF");
-        _camera->setBacklight(Off);
-    }
-}
+//void CameraControl::lightButtonToggled(bool checked)
+//{
+//    if ( checked ) {
+//        _lightButton.setText("Light - ON");
+//        _camera->setBacklight(On);
+//    } else {
+//        _lightButton.setText("Light - OFF");
+//        _camera->setBacklight(Off);
+//    }
+//}
 
-void CameraControl::resizeEvent(QResizeEvent *event)
-{
-    Q_UNUSED(event);
-    int margin = 3;
-    int buttonHeight = 22;
-    _lightButton.setGeometry(margin, height() - buttonHeight - margin, width() - 2*margin, buttonHeight);
-    _scheme.setGeometry(0,0,width(), height()-2*margin - buttonHeight);
-}
+//void CameraControl::resizeEvent(QResizeEvent *event)
+//{
+//    Q_UNUSED(event);
+//    int margin = 3;
+//    int buttonHeight = 22;
+//    _lightButton.setGeometry(margin, height() - buttonHeight - margin, width() - 2*margin, buttonHeight);
+//    _scheme.setGeometry(0,0,width(), height()-2*margin - buttonHeight);
+//}

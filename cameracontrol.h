@@ -5,21 +5,25 @@
 #include "point.h"
 #include "cameraschemewidget.h"
 
-#include <QPushButton>
-#include <QFrame>
+#include <QObject>
+//#include <QPushButton>
+//#include <QFrame>
 
 class ICamera;
-class QLabel;
 
-class CameraControl : public QFrame, public Subscriber
+namespace PC {
+class ComPort;
+}
+//class QLabel;
+
+class CameraControl : public QObject, public Subscriber /*public QFrame,*/
 {
     Q_OBJECT
 public:
-    CameraControl(QWidget *parent = nullptr);
-    ~CameraControl();
+    CameraControl(ICamera *camera, const PC::ComPort *port/*, QWidget *parent = nullptr*/);
 
-    void setCamera(ICamera *camera);
-    void moveCamera(Point newPos);
+    void moveTo(Point newPos);
+    void moveToWihtoutSignal(Point newPos);
     void goHome();
     void lightOn();
 
@@ -30,23 +34,24 @@ public:
     bool isConnected() const;
 
 signals:
+    void cameraUpdated();
     void cameraReachedTargetPoint();
 
-public slots:
+private slots:
     void cameraConnected();
     void cameraDisconnected();
 
-protected:
-    void resizeEvent(QResizeEvent *event) override;
+//protected:
+//    void resizeEvent(QResizeEvent *event) override;
 
-private slots:
-    void moveToPoint(const Point &newPos);
-    void lightButtonToggled(bool checked);
+//private slots:
+//    void moveToPoint(const Point &newPos);
+//    void lightButtonToggled(bool checked);
 
 private:
-    ICamera *_camera = nullptr;
-    CameraSchemeWidget _scheme;
-    QPushButton _lightButton;
+    ICamera *const _camera = nullptr;
+//    CameraSchemeWidget _scheme;
+//    QPushButton _lightButton;
 
     bool _goingToNewPos = false;
     bool _cameraConnected = false;

@@ -67,14 +67,14 @@ void Robot::next()
     {
     case Start:
         if ( _points->hasNextTargetPoint() )
-            _cameraController->moveCamera( _points->nextTargetPoint() );
+            _cameraController->moveTo( _points->nextTargetPoint() );
         else
             stop();
         break;
 
     case TableCheck:
         if ( _points->hasNextCheckPoint() )
-            _cameraController->moveCamera( _points->nextCheckPoint() );
+            _cameraController->moveTo( _points->nextCheckPoint() );
         else
         {
             _state = Start;
