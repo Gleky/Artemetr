@@ -12,7 +12,7 @@
 
 #include <QFile>
 
-const QString logFileName = "../log.txt";
+const QString logFileName = "log.txt";
 void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg);
 
 
@@ -36,8 +36,11 @@ int main(int argc, char *argv[])
     cam.subscribe( &cameraController );
 //    window.setCameraPos(&cameraController);
 
-    ManualControlWidget manualControl( &cameraController, &window );
-    manualControl.show();
+    ManualControlWidget manualControl( &cameraController );
+
+    CameraSchemeWidget cameraScheme( &cameraController, &manualControl, &window );
+    window.setCameraPos( &cameraScheme );
+    cameraScheme.connect( &cameraController, &CameraControl::cameraUpdated, &cameraScheme, &CameraSchemeWidget::updateScheme );
 
     Robot robot(&cameraController, &cameraWidget);
     window.connectButtons(&robot);

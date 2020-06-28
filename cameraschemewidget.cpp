@@ -3,24 +3,30 @@
 
 #include "keywords.h"
 #include "cameracontrol.h"
+#include "manualcontrolwidget.h"
 
 #include <QPainter>
 #include <QKeyEvent>
 
 
-CameraSchemeWidget::CameraSchemeWidget(QWidget *parent)
-    : QWidget(parent)
+CameraSchemeWidget::CameraSchemeWidget(CameraControl *camera, ManualControlWidget *manualControl, QWidget *parent)
+    : QWidget(parent),
+      _camera(camera),
+      _manualControl(manualControl)
 {
     setFocusPolicy( Qt::StrongFocus );
 }
 
-void CameraSchemeWidget::setController(CameraControl *controller)
+void CameraSchemeWidget::updateScheme()
 {
-    _controller = controller;
+    update();
 }
 
 void CameraSchemeWidget::mousePressEvent(QMouseEvent *event)
 {
+    if ( _manualControl->isHidden() )
+        return;
+
     auto pos = event->pos();
 
     Point newPos = {(int)round( static_cast<double>(pos.x()-_leftBorder)/_scale ),
@@ -35,11 +41,14 @@ void CameraSchemeWidget::mousePressEvent(QMouseEvent *event)
     if (newPos.Y > yMaxPos)
         newPos.Y = yMaxPos;
 
-    moveToPoint(newPos);
+    _camera->moveToWihtoutSignal( newPos );
 }
 
 void CameraSchemeWidget::keyPressEvent(QKeyEvent *event)
 {
+    if ( _manualControl->isHidden() )
+        return;
+
     if ( event->key() == Qt::Key_Up ) {
         buttonUp = true;
     } else if ( event->key() == Qt::Key_Down ) {
@@ -84,11 +93,11 @@ void CameraSchemeWidget::paintEvent(QPaintEvent *event)
     painter.setPen( linepen );
     painter.drawRect(_leftBorder, _topBorder, xMaxPos*_scale, yMaxPos*_scale);
 
-    if ( _controller == nullptr )
+    if ( _camera == nullptr )
         return;
 
-    Point currentPos = _controller->currentPos();
-    Point targetPos = _controller->targetPos();
+    Point currentPos = _camera->currentPos();
+    Point targetPos = _camera->targetPos();
 
     if ( targetPos.X >= 0 && targetPos.Y >= 0 ) {
         linepen.setWidth( _pointSize );
@@ -104,20 +113,29 @@ void CameraSchemeWidget::paintEvent(QPaintEvent *event)
         painter.drawPoint( _leftBorder + currentPos.X*_scale, _topBorder + (yMaxPos - currentPos.Y)*_scale );
     }
 
-    if ( !_controller->isConnected() ) {
+    if ( !_camera->isConnected() ) {
         linepen.setColor( red );
         painter.setPen( linepen );
         painter.drawText((width() - 80)/2, (height() - 15)/2, 80, 15, Qt::AlignCenter, "DISCONNECTED");
     }
 
+#ifndef TEST
     if ( currentPos.X >= 0 && currentPos.Y >= 0 ) {
+#else
+    if ( targetPos.X >= 0 && targetPos.Y >= 0 ) {
+#endif
         linepen.setColor( QColor(80,80,80) );
         painter.setPen( linepen );
         QFont font = painter.font();
         font.setPixelSize(16);
         painter.setFont(font);
-        painter.drawText((width() - 80)/2, (height() - 25)/2, 80, 25, Qt::AlignCenter,
+//        painter.drawText((width() - 80)/2, (height() - 25)/2, 80, 25, Qt::AlignCenter,
+        painter.drawText( (width() - 80)/2, 0, 80, 25, Qt::AlignCenter,
+                 #ifndef TEST
                          QString::number(currentPos.X)+"  "+QString::number(currentPos.Y));
+                 #else
+                         QString::number(targetPos.X)+"  "+QString::number(targetPos.Y));
+                 #endif
     }
 }
 
@@ -148,12 +166,17 @@ void CameraSchemeWidget::resizeEvent(QResizeEvent *event)
     _scale = height/yMaxPos;
 }
 
+void CameraSchemeWidget::mouseDoubleClickEvent(QMouseEvent *event)
+{
+    _manualControl->show();
+}
+
 void CameraSchemeWidget::checkKeys()
 {
-    if ( _controller == nullptr )
+    if ( _camera == nullptr )
         return;
 
-    Point newPos = _controller->targetPos();
+    Point newPos = _camera->targetPos();
     if ( buttonUp )
         stepUp(newPos);
     if ( buttonDown )
@@ -163,7 +186,7 @@ void CameraSchemeWidget::checkKeys()
     if ( buttonRight )
         stepRight(newPos);
 
-    emit moveToPoint(newPos);
+    _camera->moveToWihtoutSignal( newPos );
 }
 
 const int step = 1;

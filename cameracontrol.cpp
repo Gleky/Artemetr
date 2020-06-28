@@ -2,8 +2,8 @@
 #include "icamera.h"
 #include "comport.h"
 
-#include <QKeyEvent>
-#include <QPainter>
+//#include <QKeyEvent>
+//#include <QPainter>
 #include <keywords.h>
 
 QString const lightButtonStyle("QPushButton{background: rgb(180,180,180);"
@@ -57,7 +57,6 @@ void CameraControl::moveTo(Point newPos)
     _goingToNewPos = true;
 #else
     emit cameraReachedTargetPoint();
-    emit cameraUpdated();
 #endif
 }
 
@@ -67,6 +66,7 @@ void CameraControl::moveToWihtoutSignal(Point newPos)
         return;
 
     _camera->move(newPos);
+    emit cameraUpdated();
 }
 
 void CameraControl::goHome()

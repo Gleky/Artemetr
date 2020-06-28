@@ -6,16 +6,16 @@
 #include <QWidget>
 
 class CameraControl;
+class ManualControlWidget;
 
 class CameraSchemeWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit CameraSchemeWidget(QWidget *parent = nullptr);
-    void setController(CameraControl *controller);
+    explicit CameraSchemeWidget(CameraControl *camera, ManualControlWidget *manualControl, QWidget *parent = nullptr);
 
-signals:
-    void moveToPoint(Point newPos);
+public slots:
+    void updateScheme();
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;
@@ -23,9 +23,12 @@ protected:
     void keyReleaseEvent(QKeyEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
     void resizeEvent(QResizeEvent *event) override;
+    void mouseDoubleClickEvent(QMouseEvent *event) override;
 
 private:
-    CameraControl *_controller = nullptr;
+    CameraControl *const _camera = nullptr;
+    ManualControlWidget *const _manualControl;
+
     void checkKeys();
 
     int _topBorder = 0,
