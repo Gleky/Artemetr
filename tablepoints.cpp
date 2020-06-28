@@ -166,7 +166,7 @@ QList<Point> PackCornerPoints::points() const
     cornerPoints.append( topRight() );
     cornerPoints.append( botRight() );
     cornerPoints.append( botLeft() );
-
+    return cornerPoints;
 }
 
 Point PackCornerPoints::topLeft() const
