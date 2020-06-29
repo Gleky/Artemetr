@@ -31,10 +31,25 @@ void ImageAnalyzer::checkPresence(QImage img)
     cv::Mat forStudy;
     cvtColor(inputImg, forStudy, cv::COLOR_BGR2GRAY);
 
-    auto val = cv::mean(forStudy);
-    double average = val[0];
+    int threshold = 100;
+    cv::inRange(forStudy, threshold, 255, forStudy);
 
-    if ( average < 200 )
+    auto totalPixelsCount = forStudy.size().area();
+    auto pixelValue = forStudy.data;
+    int darkPixelsCount = 0;
+
+    for (int i = 0; i < totalPixelsCount; ++i, ++pixelValue)
+    {
+        if ( (*pixelValue) == 0 )
+            ++darkPixelsCount;
+    }
+
+    double darkness = (darkPixelsCount*1.0) / totalPixelsCount;
+
+//    auto val = cv::mean(forStudy);
+//    double average = val[0];
+
+    if ( darkness > 0.12 )
         presence = true;
 
     emit packPresence( presence );

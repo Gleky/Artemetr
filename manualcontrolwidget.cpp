@@ -46,19 +46,24 @@ void ManualControlWidget::indexCanged(int index)
 void ManualControlWidget::setupWidget()
 {
     setFocusPolicy(Qt::NoFocus);
+    setWindowTitle("Manual control");
 
     auto layout = new QGridLayout;
     setLayout( layout );
+    layout->setSpacing(14);
 
     auto packIndex = new QSpinBox(this);
     layout->addWidget(packIndex,0,0);
     packIndex->setRange(1, 15); //HARDCODE!!
     packIndex->setValue(1);
+    packIndex->setFixedHeight(35);
+    packIndex->setFont( QFont(packIndex->font().family(), 15) );
     connect( packIndex, QOverload<int>::of(&QSpinBox::valueChanged), this, &ManualControlWidget::indexCanged );
 
     auto goToCornerButton = new QPushButton("Go to corner", this);
-    layout->addWidget(goToCornerButton,1,0);
+    layout->addWidget(goToCornerButton,0,1);
+    goToCornerButton->setFixedHeight( packIndex->height() );
     connect( goToCornerButton, &QPushButton::clicked, this, &ManualControlWidget::goToCorner );
 
-    resize(300,300);
+    resize(250,80);
 }

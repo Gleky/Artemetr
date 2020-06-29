@@ -85,3 +85,4 @@ debug/Artemetr.vc.pdb
 debug/Artemetr_resource.res
 log.txt
 debug/moc_manualcontrolwidget.cpp
+release/moc_manualcontrolwidget.cpp
