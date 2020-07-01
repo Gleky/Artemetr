@@ -11,10 +11,12 @@
 #define horisontalCellCount 4
 #define verticalPackCount 3
 #define verticalCellCount 6
-#define packWidth 57
-#define packHeight 97
-#define tableMargin 2
-
+#define packWidth 58
+#define packHeight 96.3
+#define leftTableMargin 14
+#define botTableMargin 18
+#define xSpace 27.3
+#define ySpace 31
 
 //Connection commands
 #define movingCamId "MOVING_CAM"

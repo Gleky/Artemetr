@@ -19,11 +19,13 @@ ResultSaver::ResultSaver(QString folderName)
 
 void ResultSaver::saveResult(CellResult result)
 {
+#ifndef TEST
     auto fileName = QDateTime::currentDateTime().toString("yyyy.MM.dd hh-mm-ss");
 
     result.result.save(_savePath+fileName+".jpg", "JPEG", 100);
 
     result.source.save(_sourcePath+fileName+" source.jpg", "JPEG", 100);
+#endif
 
     _crayfishCount += result.crayfishCount;
     _eggsCount += result.eggsCount;

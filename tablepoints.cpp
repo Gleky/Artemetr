@@ -26,10 +26,10 @@ const Point TablePoints::nextCheckPoint() const
     if ( !_packsForCheck.isEmpty() )
     {
         auto currentPack = _packsForCheck.first();
-        constexpr int gap = (xMaxPos - 2*tableMargin - packWidth*horisontalPackCount)/(horisontalPackCount - 1);
+//        constexpr int gap = (xMaxPos - 2*tableMargin - packWidth*horisontalPackCount)/(horisontalPackCount - 1);
 
-        checkPoint.X = tableMargin + currentPack.X*(packWidth + gap) + packWidth/2;
-        checkPoint.Y = tableMargin + currentPack.Y*(packHeight + gap) + packHeight/2;
+        checkPoint.X = leftTableMargin + currentPack.X*(packWidth + xSpace) + packWidth/2;
+        checkPoint.Y = botTableMargin + currentPack.Y*(packHeight + ySpace) + packHeight/2;
     }
 
     return checkPoint;
@@ -117,10 +117,10 @@ QList<Point> getPackList()
 
 QList<Point> packTargetPoints(Point packPosition, bool rightToLeftDirection)
 {
-    constexpr int gap = (xMaxPos - 2*tableMargin - packWidth*horisontalPackCount)/(horisontalPackCount - 1);
+//    constexpr int gap = (xMaxPos - 2*tableMargin - packWidth*horisontalPackCount)/(horisontalPackCount - 1);
 
-    int startX = tableMargin + packPosition.X*(packWidth + gap);
-    const int startY = tableMargin + packPosition.Y*(packHeight + gap);
+    double startX = leftTableMargin + packPosition.X*(packWidth + xSpace);
+    const double startY = botTableMargin + packPosition.Y*(packHeight + ySpace);
 
     double xStep =  static_cast<double>(packWidth)/(horisontalCellCount - 1);
     double yStep = static_cast<double>(packHeight)/(verticalCellCount - 1);
@@ -130,21 +130,21 @@ QList<Point> packTargetPoints(Point packPosition, bool rightToLeftDirection)
         startX += packWidth;
         xStep = -xStep;
     }
-    const Point startPoint(startX,startY);
+//    const Point startPoint(startX,startY);
 
     QList<Point> targetPoints;
 
     for ( int m = 0; m < horisontalCellCount; ++m)
     {
-        int x = startPoint.X + lround(xStep*m);
+        int x = lround(startX + xStep*m);
 
-        int localStartY = startPoint.Y;
+        double localStartY = startY;
         if ( yStep < 0 )
             localStartY += packHeight;
 
         for ( int n = 0; n < verticalCellCount; ++n)
         {
-            int y = localStartY + lround(yStep*n);
+            int y = lround(localStartY + yStep*n);
             targetPoints.append( Point(x,y) );
         }
         yStep = -yStep;
