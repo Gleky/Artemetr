@@ -22,6 +22,10 @@ private:
 
     CameraControl *const _camera = nullptr;
     int _packIndex = 1;
+
+    // QWidget interface
+protected:
+    void closeEvent(QCloseEvent *event) override;
 };
 
 #endif // MANUALCONTROLWIDGET_H

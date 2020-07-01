@@ -6,6 +6,7 @@
 #include <QGridLayout>
 #include <QSpinBox>
 #include <QPushButton>
+#include <QCloseEvent>
 
 ManualControlWidget::ManualControlWidget(CameraControl *cameraController, QWidget *parent)
     : QWidget(parent),
@@ -66,4 +67,10 @@ void ManualControlWidget::setupWidget()
     connect( goToCornerButton, &QPushButton::clicked, this, &ManualControlWidget::goToCorner );
 
     resize(250,80);
+}
+
+void ManualControlWidget::closeEvent(QCloseEvent *event)
+{
+    hide();
+    event->ignore();
 }
