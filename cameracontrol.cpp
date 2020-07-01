@@ -71,6 +71,7 @@ void CameraControl::moveToWihtoutSignal(Point newPos)
 
 void CameraControl::goHome()
 {
+    _goingToNewPos = false;
     moveTo( Point(homeX,homeY) );
     _camera->setBacklight(Off);
 //    _lightButton.setChecked(false);

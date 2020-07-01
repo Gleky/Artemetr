@@ -53,6 +53,8 @@ void Robot::stop()
 
     _state = Stop;
 
+    _cameraController->goHome();
+
     delete _points;
     _points = new TablePoints;
 
@@ -166,7 +168,7 @@ void Robot::prepareToClose()
 {
     qDebug() << "Start preparing to close";
     if ( _state == Start )
-        emit done();
+        stop();
 
     if ( !_cameraController->isConnected() ){
         QApplication::exit();
