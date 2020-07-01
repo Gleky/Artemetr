@@ -37,6 +37,7 @@ SOURCES += \
         cameraschemewidget.cpp \
         camerawidget.cpp \
         comport.cpp \
+        hardware.cpp \
         main.cpp \
         mainwindow.cpp \
         manualcontrolwidget.cpp \
@@ -54,6 +55,7 @@ HEADERS += \
         common/icomport.h \
         common/iobserver.h \
         common/keywords.h \
+        hardware.h \
         mainwindow.h \
         common/point.h \
         manualcontrolwidget.h \
