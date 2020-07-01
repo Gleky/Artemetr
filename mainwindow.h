@@ -30,6 +30,9 @@ public:
 
     void connectButtons(Robot *robot);
 
+signals:
+    void closing();
+
 private:
     Ui::MainWindow *ui = nullptr;
     Robot* _robot = nullptr;

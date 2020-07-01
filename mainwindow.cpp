@@ -47,6 +47,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
         return;
     }
 
+    emit closing();
     _robot->prepareToClose();
     event->ignore();
     firstCall = false;

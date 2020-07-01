@@ -34,9 +34,9 @@ int main(int argc, char *argv[])
 
     CameraControl cameraController( &cam, &port );
     cam.subscribe( &cameraController );
-//    window.setCameraPos(&cameraController);
 
     ManualControlWidget manualControl( &cameraController );
+    window.connect(&window, &MainWindow::closing, &manualControl, &ManualControlWidget::close);
 
     CameraSchemeWidget cameraScheme( &cameraController, &manualControl, &window );
     window.setCameraPos( &cameraScheme );
