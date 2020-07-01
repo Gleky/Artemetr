@@ -117,8 +117,6 @@ QList<Point> getPackList()
 
 QList<Point> packTargetPoints(Point packPosition, bool rightToLeftDirection)
 {
-//    constexpr int gap = (xMaxPos - 2*tableMargin - packWidth*horisontalPackCount)/(horisontalPackCount - 1);
-
     double startX = leftTableMargin + packPosition.X*(packWidth + xSpace);
     const double startY = botTableMargin + packPosition.Y*(packHeight + ySpace);
 
@@ -130,7 +128,6 @@ QList<Point> packTargetPoints(Point packPosition, bool rightToLeftDirection)
         startX += packWidth;
         xStep = -xStep;
     }
-//    const Point startPoint(startX,startY);
 
     QList<Point> targetPoints;
 
