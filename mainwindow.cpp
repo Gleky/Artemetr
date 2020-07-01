@@ -27,7 +27,17 @@ void MainWindow::setCameraView(QWidget *cameraview)
 void MainWindow::setCameraPos(QWidget *camerapos)
 {
     ui->frameCameraPos->addWidget(camerapos);
-    camerapos->setFixedSize(400,420);
+    camerapos->setFixedSize(400,424);
+
+    ui->frameCameraPos->addWidget(&labelCrayfish);
+    labelCrayfish.setMargin(6);
+    ui->frameCameraPos->addWidget(&labelEgg);
+    labelEgg.setMargin(6);
+
+#ifdef TEST
+    labelCrayfish.setText("Test: 0");
+    labelEgg.setText("Test: 0");
+#endif
 }
 
 void MainWindow::connectButtons(Robot *robot)

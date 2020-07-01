@@ -151,13 +151,13 @@ void CameraSchemeWidget::resizeEvent(QResizeEvent *event)
 
     double height,width;
     if ( tableRatio < windowRatio ) {
-        _topBorder = widgetHeight*0.04;
+        _topBorder = widgetHeight*0.02;
         height = widgetHeight - 2*_topBorder;
         width = height * tableRatio;
         _leftBorder = (widgetWidth - width)/2;
     }
     else {
-        _leftBorder = widgetWidth*0.04;
+        _leftBorder = widgetWidth*0.02;
         width = widgetWidth - 2*_leftBorder;
         height = width / tableRatio;
         _topBorder = (widgetHeight - height)/2;

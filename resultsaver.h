@@ -16,6 +16,9 @@ public slots:
     void savePackResultsText();
     void saveSummaryResultsText();
 
+signals:
+    void showCrayfishResult(QString);
+    void showEggResult(QString);
 
 private:
     const QString _savePath;

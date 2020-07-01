@@ -22,6 +22,9 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
+    QLabel labelCrayfish;
+    QLabel labelEgg;
+
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 

@@ -30,6 +30,9 @@ void ResultSaver::saveResult(CellResult result)
     _crayfishCount += result.crayfishCount;
     _eggsCount += result.eggsCount;
 
+    emit showCrayfishResult( "Crayfish: "+QString::number(_crayfishCount) );
+    emit showEggResult(      "Eggs:     "+QString::number(_eggsCount) );
+
     if ( _resultSaved )
     {
         _resultSaved = false;
@@ -108,6 +111,9 @@ void ResultSaver::writeLine(QString filePath, QStringList line, char splitter) c
 
 void ResultSaver::resetCounters()
 {
+    emit showCrayfishResult("");
+    emit showEggResult("");
+
     _crayfishCount = 0;
     _eggsCount = 0;
     _resultSaved = true;
