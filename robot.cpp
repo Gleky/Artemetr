@@ -14,7 +14,11 @@ Robot::Robot(CameraControl *camera, CameraWidget *cameraWidget)
 {
     connect(&_imageAnalyzer, &ImageAnalyzer::resultReady, this, &Robot::resultReady, Qt::QueuedConnection);
     connect(&_imageAnalyzer, &ImageAnalyzer::packPresence, this, &Robot::packPresence, Qt::QueuedConnection);
+#ifndef TEST
     _delay.setInterval(1000);
+#else
+    _delay.setInterval(300);
+#endif
     _delay.setSingleShot(true);
 
     connect(_cameraController, &CameraControl::cameraReachedTargetPoint, &_delay, qOverload<>(&QTimer::start), Qt::QueuedConnection);
@@ -37,6 +41,8 @@ void Robot::start()
         break;
 
     case Stop:
+        delete _points;
+        _points = new TablePoints;
         _cameraController->lightOn();
         _state = TableCheck;
         next();
@@ -54,9 +60,6 @@ void Robot::stop()
     _state = Stop;
 
     _cameraController->goHome();
-
-    delete _points;
-    _points = new TablePoints;
 
     emit done();
 }
