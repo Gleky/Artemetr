@@ -71,9 +71,6 @@ void ResultSaver::saveSummaryResultsText()
     saveResults(fileName, line, ',');
     saveResults(fileName+"_old_format", line, ';');
 
-    QMessageBox::information(nullptr, "Done", "Crayfish: " + QString::number(_crayfishCount)+'\n'+
-                                              "Eggs: " + QString::number(_eggsCount));
-
     resetCounters();
 }
 
