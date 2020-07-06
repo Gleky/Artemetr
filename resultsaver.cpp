@@ -41,7 +41,7 @@ void ResultSaver::saveResult(CellResult result)
 }
 
 
-void createSaveFileIfNotExists(QString filePath, char splitter);
+void createSaveFileIfNotExists(QString filePath);
 
 void ResultSaver::savePackResultsText()
 {
@@ -49,7 +49,7 @@ void ResultSaver::savePackResultsText()
     const int currentEggCount = _eggsCount - _lastEggsCount;
 
     const QString fileName = "results_log";
-    const QStringList line = {" ", QString::number(_crayfishCount), QString::number(_eggsCount)};
+    const QStringList line = {" ", QString::number(currentCryfishCount), QString::number(currentEggCount)};
 
     saveResults(fileName, line, ',');
     saveResults(fileName+"_old_format", line, ';');
@@ -78,7 +78,7 @@ void ResultSaver::saveSummaryResultsText()
 void ResultSaver::saveResults(QString fileName, QStringList line, char splitter) const
 {
     const QString saveFilePath = "../"+fileName+".csv";
-    createSaveFileIfNotExists(saveFilePath, splitter);
+    createSaveFileIfNotExists(saveFilePath);
     writeLine(saveFilePath, line, splitter);
 }
 
@@ -122,7 +122,7 @@ void ResultSaver::resetCounters()
     _lastEggsCount = 0;
 }
 
-void createSaveFileIfNotExists(QString filePath, char splitter)
+void createSaveFileIfNotExists(QString filePath)
 {
     QFile saveFile( filePath );
     if ( saveFile.exists() )
