@@ -26,7 +26,6 @@ const Point TablePoints::nextCheckPoint() const
     if ( !_packsForCheck.isEmpty() )
     {
         auto currentPack = _packsForCheck.first();
-//        constexpr int gap = (xMaxPos - 2*tableMargin - packWidth*horisontalPackCount)/(horisontalPackCount - 1);
 
         checkPoint.X = leftTableMargin + currentPack.X*(packWidth + xSpace) + packWidth/2;
         checkPoint.Y = botTableMargin + currentPack.Y*(packHeight + ySpace) + packHeight/2;
@@ -53,7 +52,8 @@ void TablePoints::currentCheckIs(bool checkResult)
         getTargetPoints();
 }
 
-QList<Point> packTargetPoints(Point packPosition, bool rightToLeftDirection);
+QList<Point> verticalPackTargetPoints(Point packPosition, bool rightToLeftDirection);
+QList<Point> horizontalPackTargetPoints(Point packPosition);
 
 void TablePoints::getTargetPoints()
 {
@@ -62,7 +62,10 @@ void TablePoints::getTargetPoints()
         auto currentPackPosition = _packList.takeLast();
         bool rightToLeft = currentPackPosition.Y % 2;
 
-        _targetPoints += packTargetPoints(currentPackPosition, rightToLeft);
+        if (false)
+            _targetPoints += verticalPackTargetPoints(currentPackPosition, rightToLeft);
+        else
+            _targetPoints += horizontalPackTargetPoints(currentPackPosition);
     }
 }
 
@@ -115,7 +118,50 @@ QList<Point> getPackList()
     return packList;
 }
 
-QList<Point> packTargetPoints(Point packPosition, bool rightToLeftDirection)
+
+
+
+
+PackCornerPoints::PackCornerPoints(Point packPosition)
+    :_cellPoints( verticalPackTargetPoints(packPosition, false) )
+{
+
+}
+
+QList<Point> PackCornerPoints::points() const
+{
+    QList<Point> cornerPoints;
+    cornerPoints.append( botLeft() );
+    cornerPoints.append( topLeft() );
+    cornerPoints.append( topRight() );
+    cornerPoints.append( botRight() );
+    return cornerPoints;
+}
+
+Point PackCornerPoints::topLeft() const
+{
+    return  _cellPoints[verticalCellCount-1];
+}
+
+Point PackCornerPoints::topRight() const
+{
+    return _cellPoints[verticalCellCount*horisontalCellCount - verticalCellCount];
+}
+
+Point PackCornerPoints::botLeft() const
+{
+    return _cellPoints[0];
+}
+
+Point PackCornerPoints::botRight() const
+{
+    return _cellPoints[verticalCellCount*horisontalCellCount -1];
+}
+
+
+
+
+QList<Point> verticalPackTargetPoints(Point packPosition, bool rightToLeftDirection)
 {
     double startX = leftTableMargin + packPosition.X*(packWidth + xSpace);
     const double startY = botTableMargin + packPosition.Y*(packHeight + ySpace);
@@ -150,38 +196,31 @@ QList<Point> packTargetPoints(Point packPosition, bool rightToLeftDirection)
     return targetPoints;
 }
 
-PackCornerPoints::PackCornerPoints(Point packPosition)
-    :_cellPoints( packTargetPoints(packPosition, false) )
+QList<Point> horizontalPackTargetPoints(Point packPosition)
 {
+    const double startX = leftTableMargin + packPosition.X*(packWidth + xSpace);
+    const double startY = botTableMargin + packPosition.Y*(packHeight + ySpace);
 
-}
+    double xStep =  static_cast<double>(packWidth)/(horisontalCellCount - 1);
+    double yStep = static_cast<double>(packHeight)/(verticalCellCount - 1);
 
-QList<Point> PackCornerPoints::points() const
-{
-    QList<Point> cornerPoints;
-    cornerPoints.append( botLeft() );
-    cornerPoints.append( topLeft() );
-    cornerPoints.append( topRight() );
-    cornerPoints.append( botRight() );
-    return cornerPoints;
-}
+    QList<Point> targetPoints;
 
-Point PackCornerPoints::topLeft() const
-{
-    return  _cellPoints[verticalCellCount-1];
-}
+    for ( int m = 0; m < verticalCellCount; ++m)
+    {
+        int y = lround(startY + yStep*m);
 
-Point PackCornerPoints::topRight() const
-{
-    return _cellPoints[verticalCellCount*horisontalCellCount - verticalCellCount];
-}
+        double localStartX = startX;
+        if ( xStep < 0 )
+            localStartX += packWidth;
 
-Point PackCornerPoints::botLeft() const
-{
-    return _cellPoints[0];
-}
+        for ( int n = 0; n < horisontalCellCount; ++n)
+        {
+            int x = lround(localStartX + xStep*n);
+            targetPoints.append( Point(x,y) );
+        }
+        xStep = -xStep;
+    }
 
-Point PackCornerPoints::botRight() const
-{
-    return _cellPoints[verticalCellCount*horisontalCellCount -1];
+    return targetPoints;
 }
