@@ -168,6 +168,7 @@ void CameraSchemeWidget::resizeEvent(QResizeEvent *event)
 
 void CameraSchemeWidget::mouseDoubleClickEvent(QMouseEvent *event)
 {
+    Q_UNUSED(event)
     _manualControl->show();
 }
 
