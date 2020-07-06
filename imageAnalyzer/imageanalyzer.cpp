@@ -125,6 +125,9 @@ void ImageAnalyzer::computeResult(QImage img)
             break;
         }
     }
+#else
+    result.crayfishCount = 1;
+    result.eggsCount = 1;
 #endif
 
     qDebug() << "Result ready, converting";
