@@ -30,8 +30,10 @@ void ResultSaver::saveResult(CellResult result)
     _crayfishCount += result.crayfishCount;
     _eggsCount += result.eggsCount;
 
-    emit showCrayfishResult( "Crayfish: "+QString::number(_crayfishCount) );
-    emit showEggResult(      "Eggs:     "+QString::number(_eggsCount) );
+    const int currentCryfishCount = _crayfishCount - _lastCrayfishCount;
+    const int currentEggCount = _eggsCount - _lastEggsCount;
+    emit showCrayfishResult( "Crayfish: "+QString::number(currentCryfishCount) );
+    emit showEggResult(      "Eggs:     "+QString::number(currentEggCount) );
 
     if ( _resultSaved )
     {
