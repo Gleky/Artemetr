@@ -48,6 +48,7 @@ void ManualControlWidget::setupWidget()
 {
     setFocusPolicy(Qt::NoFocus);
     setWindowTitle("Manual control");
+    setWindowFlag(Qt::WindowStaysOnTopHint);
 
     auto layout = new QGridLayout;
     setLayout( layout );
