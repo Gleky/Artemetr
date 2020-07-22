@@ -6,6 +6,7 @@
 CameraWidget::CameraWidget(QWidget *parent)
     : QWidget(parent)
 {
+    setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
     connect(&_showResultTimer, &QTimer::timeout, this, &CameraWidget::hideResult);
     _showResultTimer.setInterval(2500);
 
