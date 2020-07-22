@@ -43,6 +43,7 @@ SOURCES += \
         manualcontrolwidget.cpp \
         resultsaver.cpp \
         robot.cpp \
+        settings.cpp \
         tablepoints.cpp
 
 HEADERS += \
@@ -61,6 +62,7 @@ HEADERS += \
         manualcontrolwidget.h \
         resultsaver.h \
         robot.h \
+        settings.h \
         struct_result.h \
         tablepoints.h
 
