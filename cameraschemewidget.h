@@ -4,6 +4,7 @@
 #include "point.h"
 
 #include <QWidget>
+#include <QPushButton>
 
 class CameraControl;
 class ManualControlWidget;
@@ -26,8 +27,10 @@ protected:
     void mouseDoubleClickEvent(QMouseEvent *event) override;
 
 private:
-    CameraControl *const _camera = nullptr;
+    CameraControl *const _camera;
     ManualControlWidget *const _manualControl;
+
+    QPushButton _settingsButton;
 
     void checkKeys();
 

@@ -12,8 +12,10 @@
 CameraSchemeWidget::CameraSchemeWidget(CameraControl *camera, ManualControlWidget *manualControl, QWidget *parent)
     : QWidget(parent),
       _camera(camera),
-      _manualControl(manualControl)
+      _manualControl(manualControl),
+      _settingsButton("Settings", this)
 {
+    _settingsButton.resize(60, 22);
     setFocusPolicy( Qt::StrongFocus );
 }
 
@@ -129,7 +131,6 @@ void CameraSchemeWidget::paintEvent(QPaintEvent *event)
         QFont font = painter.font();
         font.setPixelSize(16);
         painter.setFont(font);
-//        painter.drawText((width() - 80)/2, (height() - 25)/2, 80, 25, Qt::AlignCenter,
         painter.drawText( (width() - 80)/2, 0, 80, 25, Qt::AlignCenter,
                  #ifndef TEST
                          QString::number(currentPos.X)+"  "+QString::number(currentPos.Y));
@@ -164,6 +165,8 @@ void CameraSchemeWidget::resizeEvent(QResizeEvent *event)
     }
     _pointSize = sqrt(height*width)*0.03;
     _scale = height/yMaxPos;
+
+    _settingsButton.move( widgetWidth - _settingsButton.width() - _leftBorder, 0);
 }
 
 void CameraSchemeWidget::mouseDoubleClickEvent(QMouseEvent *event)
