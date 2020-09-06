@@ -6,11 +6,13 @@
 #include <QObject>
 #include "../struct_result.h"
 
+
 class IMAGEANALYZER_EXPORT ImageAnalyzer : public QObject
 {
     Q_OBJECT
 public:
     ImageAnalyzer();
+
     void checkPackPresence(const QImage &img);
     void getResult(const QImage &img);
 
