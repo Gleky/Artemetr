@@ -19,21 +19,23 @@ public:
     Robot(CameraControl *camera,CameraWidget *cameraWidget);
     ~Robot();
 
+//    QLayout battonsLayout();
     void prepareToClose();
 
 public slots:
     void start();
     void stop();
 
-    void cameraAtTargetPoint();
-    void imageCaptured(int id, const QImage &image);
-    void packPresence( bool presence );
-    void resultReady(CellResult res);
-
 signals:
     void result(CellResult);
     void done();
     void packDone();
+
+private slots:
+    void cameraAtTargetPoint();
+    void imageCaptured(int id, const QImage &image);
+    void packPresence( bool presence );
+    void resultReady(CellResult res);
 
 private:
     enum RobotState {Start, TableCheck, Stop, Close};
@@ -47,7 +49,6 @@ private:
     CameraControl *const _cameraController = nullptr;
     CameraWidget *const _cameraWidget = nullptr;
     QTimer _delay;
-    Robot();
 };
 
 #endif // ROBOT_H

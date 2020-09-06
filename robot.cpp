@@ -6,6 +6,10 @@
 #include <QApplication>
 #include <QFile>
 
+//#include <QGridLayout>
+//#include <QPushButton>
+//#include <QRadioButton>
+
 // NEED TO SPLIT INTO STATE OBJECTS !!!
 
 Robot::Robot(CameraControl *camera, CameraWidget *cameraWidget)
@@ -30,6 +34,17 @@ Robot::Robot(CameraControl *camera, CameraWidget *cameraWidget)
 
 Robot::~Robot()
 {}
+
+//QLayout Robot::battonsLayout()
+//{
+//    // need new class for this
+
+//    auto layout = new QGridLayout;
+//    auto startButton = new QPushButton("Start");
+//    auto stopButton = new QPushButton("Stop");
+//    auto crayfishModeButton = new QRadioButton("Crayfish");
+//    auto eggsModeButton = new QRadioButton("Eggs");
+//}
 
 void Robot::start()
 {
