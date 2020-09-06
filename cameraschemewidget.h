@@ -30,7 +30,7 @@ private:
     CameraControl *const _camera;
     ManualControlWidget *const _manualControl;
 
-    QPushButton _settingsButton;
+//    QPushButton _settingsButton;
 
     void checkKeys();
 
