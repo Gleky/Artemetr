@@ -31,7 +31,8 @@ void ImageAnalyzer::checkPresence(QImage img)
     cv::Mat forStudy;
     cvtColor(inputImg, forStudy, cv::COLOR_BGR2GRAY);
 
-    int threshold = 100;
+    QSettings filterSettings("filter.config", QSettings::IniFormat);
+    const int threshold = filterSettings.value("presenceWhiteThreshold",110).toInt();
     cv::inRange(forStudy, threshold, 255, forStudy);
 
     auto totalPixelsCount = forStudy.size().area();
@@ -46,7 +47,8 @@ void ImageAnalyzer::checkPresence(QImage img)
 
     double darkness = (darkPixelsCount*1.0) / totalPixelsCount;
 
-    if ( darkness > 0.12 )
+    const double minDarkPart = filterSettings.value("presenceDarkPatr", 0.12).toDouble();
+    if ( darkness > minDarkPart )
         presence = true;
 
     emit packPresence( presence );
