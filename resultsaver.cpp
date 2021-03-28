@@ -2,131 +2,39 @@
 
 #include <QDir>
 #include <QDateTime>
-#include <QTextStream>
-#include <QMessageBox>
 
-ResultSaver::ResultSaver(QString folderName)
+ResultSaver::ResultSaver(const QString &folderName)
     :_savePath("../" + folderName + '/')
 {
     QDir saveDir(_savePath);
     if ( !saveDir.exists() )
         saveDir.mkpath(_savePath);
 
-    QDir scourceDir(_sourcePath);
-    if ( !scourceDir.exists() )
-        scourceDir.mkpath(_sourcePath);
+    saveDir.mkdir(_subdirOriginal);
+    saveDir.mkdir(_subdirAfterIodine);
+    saveDir.mkdir(_subdirAfterChlorine);
 }
 
-void ResultSaver::saveResult(CellResult result)
+void ResultSaver::saveResult(CellImage result)
 {
-#ifndef TEST
+//#ifndef TEST
     auto fileName = QDateTime::currentDateTime().toString("yyyy.MM.dd hh-mm-ss");
+    QString subdir;
+    if ( result.photoType == Original ) subdir = _subdirOriginal;
+    else if ( result.photoType == AfterIodine ) subdir = _subdirAfterIodine;
+    else subdir = _subdirAfterChlorine;
+    subdir += '/';
 
-    result.result.save(_savePath+fileName+".jpg", "JPEG", 100);
-
-    result.source.save(_sourcePath+fileName+" source.jpg", "JPEG", 100);
-#endif
-
-    _crayfishCount += result.crayfishCount;
-    _eggsCount += result.eggsCount;
-
-    const int currentCryfishCount = _crayfishCount - _lastCrayfishCount;
-    const int currentEggCount = _eggsCount - _lastEggsCount;
-    emit showCrayfishResult( "Crayfish: "+QString::number(currentCryfishCount) );
-    emit showEggResult(      "Eggs:     "+QString::number(currentEggCount) );
-
-    if ( _resultSaved )
-    {
-        _resultSaved = false;
-        writeTitle();
-    }
+    result.img.save(_savePath+subdir+fileName+".jpg", "JPEG", 100);
+//#endif
 }
-
-
-void createSaveFileIfNotExists(QString filePath);
 
 void ResultSaver::savePackResultsText()
 {
-    const int currentCryfishCount = _crayfishCount - _lastCrayfishCount;
-    const int currentEggCount = _eggsCount - _lastEggsCount;
 
-    const QString fileName = "results_log";
-    const QStringList line = {" ", QString::number(currentCryfishCount), QString::number(currentEggCount)};
-
-    saveResults(fileName, line, ',');
-    saveResults(fileName+"_old_format", line, ';');
-
-    _lastCrayfishCount = _crayfishCount;
-    _lastEggsCount = _eggsCount;
 }
 
 void ResultSaver::saveSummaryResultsText()
 {
-    if ( _resultSaved )
-        return;
 
-    const QString fileName = "results_log";
-    const QStringList line = {"TOTAL", QString::number(_crayfishCount), QString::number(_eggsCount)+'\n'};
-
-    saveResults(fileName, line, ',');
-    saveResults(fileName+"_old_format", line, ';');
-
-    resetCounters();
-}
-
-void ResultSaver::saveResults(QString fileName, QStringList line, char splitter) const
-{
-    const QString saveFilePath = "../"+fileName+".csv";
-    createSaveFileIfNotExists(saveFilePath);
-    writeLine(saveFilePath, line, splitter);
-}
-
-void ResultSaver::writeTitle()
-{
-    const QString fileName = "results_log";
-    const QString date = QDateTime::currentDateTime().toString("yyyy.MM.dd hh:mm:ss");
-    const QStringList line = {date, "Crayfish", "Eggs"};
-
-    saveResults(fileName, line, ',');
-    saveResults(fileName+"_old_format", line, ';');
-}
-
-void ResultSaver::writeLine(QString filePath, QStringList line, char splitter) const
-{
-    QFile saveFile( filePath );
-    if ( !saveFile.open(QIODevice::Append) )
-        return;
-
-    QTextStream stream(&saveFile);
-
-    for (const auto &cellText : line )
-    {
-        stream << cellText;
-        stream << splitter;
-    }
-    stream << '\n';
-    saveFile.close();
-}
-
-void ResultSaver::resetCounters()
-{
-    emit showCrayfishResult("");
-    emit showEggResult("");
-
-    _crayfishCount = 0;
-    _eggsCount = 0;
-    _resultSaved = true;
-
-    _lastCrayfishCount = 0;
-    _lastEggsCount = 0;
-}
-
-void createSaveFileIfNotExists(QString filePath)
-{
-    QFile saveFile( filePath );
-    if ( saveFile.exists() )
-        return;
-
-    if ( !saveFile.open(QIODevice::Append) )
-        return;
 }

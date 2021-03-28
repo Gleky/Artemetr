@@ -45,12 +45,10 @@ int main(int argc, char *argv[])
     Robot robot(&cameraController, &cameraWidget);
     window.connectButtons(&robot);
 
-    ResultSaver saver("results");
+    ResultSaver saver("");
     saver.connect(&robot, &Robot::result, &saver, &ResultSaver::saveResult);
     saver.connect(&robot, &Robot::packDone, &saver, &ResultSaver::savePackResultsText);
     saver.connect(&robot, &Robot::done, &saver, &ResultSaver::saveSummaryResultsText);
-    saver.connect(&saver, &ResultSaver::showCrayfishResult, &window.labelCrayfish, &QLabel::setText);
-    saver.connect(&saver, &ResultSaver::showEggResult, &window.labelEgg, &QLabel::setText);
 
     qDebug() << "Init done";
 

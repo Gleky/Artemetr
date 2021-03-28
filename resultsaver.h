@@ -9,33 +9,18 @@ class ResultSaver : public QObject
 {
     Q_OBJECT
 public:
-    ResultSaver(QString folderName);
+    explicit ResultSaver(const QString &folderName);
 
 public slots:
-    void saveResult(CellResult result);
+    void saveResult(CellImage result);
     void savePackResultsText();
     void saveSummaryResultsText();
 
-signals:
-    void showCrayfishResult(QString);
-    void showEggResult(QString);
-
 private:
     const QString _savePath;
-    const QString _sourcePath = "../sources/";
-
-    int _crayfishCount = 0;
-    int _eggsCount = 0;
-    bool _resultSaved = true;
-
-    int _lastCrayfishCount = 0;
-    int _lastEggsCount = 0;
-
-    void saveResults(QString fileName, QStringList line, char splitter) const;
-
-    void writeTitle();
-    void writeLine(QString filePath, QStringList line, char splitter) const;
-    void resetCounters();
+    const QString _subdirOriginal = "original";
+    const QString _subdirAfterIodine = "after_iodine";
+    const QString _subdirAfterChlorine = "after_chlorine";
 };
 
 #endif // RESULTSAVER_H
