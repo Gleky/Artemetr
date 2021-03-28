@@ -7,6 +7,7 @@
 #include <QFile>
 #include <QProcess>
 #include <QDir>
+#include <QSettings>
 
 
 // NEED TO SPLIT INTO STATE OBJECTS !!!
@@ -28,6 +29,9 @@ Robot::Robot(CameraControl *camera, CameraWidget *cameraWidget)
 
     connect(cameraWidget, &CameraWidget::imageCaptured, this, &Robot::imageCaptured);
     connect(this, &Robot::result, _cameraWidget, &CameraWidget::showResult, Qt::QueuedConnection);
+
+    _chemicalWaiting.setSingleShot(true);
+    connect(&_chemicalWaiting, &QTimer::timeout, this, &Robot::next, Qt::QueuedConnection);
 }
 
 Robot::~Robot()
@@ -38,8 +42,10 @@ void Robot::start()
     qDebug() << "Start button pressed";
     switch(_state)
     {
-    case Start:
     case TableCheck:
+    case PhotoAndIodine:
+    case PhotoAndChlorine:
+    case Photo:
         break;
 
     case Stop:
@@ -72,21 +78,39 @@ void Robot::next()
 
     switch(_state)
     {
-    case Start:
-        if ( _points->hasNextTargetPoint() )
-            _cameraController->moveTo( _points->nextTargetPoint() );
-        else
-            stop();
-        break;
-
     case TableCheck:
         if ( _points->hasNextCheckPoint() )
             _cameraController->moveTo( _points->nextCheckPoint() );
         else
         {
-            _state = Start;
+            _state = PhotoAndIodine;
             next();
         }
+        break;
+
+    case PhotoAndIodine:
+        if ( _points->hasNextTargetPoint() ) _cameraController->moveTo( _points->nextTargetPoint() );
+        else
+        {
+            _points->restartTargetPoints();
+            _state = PhotoAndChlorine;
+            waitAfterIodine();
+        }
+        break;
+
+    case PhotoAndChlorine:
+        if ( _points->hasNextTargetPoint() ) _cameraController->moveTo( _points->nextTargetPoint() );
+        else
+        {
+            _points->restartTargetPoints();
+            _state = Photo;
+            waitAfterChlorine();
+        }
+        break;
+
+    case Photo:
+        if ( _points->hasNextTargetPoint() ) _cameraController->moveTo( _points->nextTargetPoint() );
+        else stop();
         break;
 
     case Stop:
@@ -101,21 +125,26 @@ void Robot::cameraAtTargetPoint()
 
     switch(_state)
     {
-    case Start:
-        qDebug() << "Try capture target image";
-        _cameraWidget->capture();
-        break;
-
     case TableCheck:
         qDebug() << "Try capture check image";
         _cameraWidget->capture();
         break;
 
-    case Close:
-        QApplication::exit();
+    case PhotoAndIodine:
+    case PhotoAndChlorine:
+    case Photo:
+        if (!_chemicalWaiting.isActive())
+        {
+            qDebug() << "Try capture target image";
+            _cameraWidget->capture();
+        }
         break;
 
     case Stop:
+        break;
+
+    case Close:
+        QApplication::exit();
         break;
     }
 }
@@ -126,28 +155,71 @@ void Robot::imageCaptured(int id, const QImage &image)
 
     switch(_state)
     {
-    case Start:
-    {
-        qDebug() << "Image captured, send it for save and go to next point";
-        CellResult res;
-        res.source = image;
-        res.result = image;
-        emit result(res);
-        if ( _points->packDone() )
-            emit packDone();
-        next();
-    }
-        break;
-
     case TableCheck:
         qDebug() << "Image captured, send it to analyzer";
         _imageAnalyzer.checkPackPresence(image);
+        break;
+
+    case PhotoAndIodine:
+        qDebug() << "Image captured, send it for save, put iodine and go to next point";
+        sendPhoto(image, Original);
+        putIodine();
+        next();
+        break;
+
+    case PhotoAndChlorine:
+        qDebug() << "Image captured, send it for save, put chlorine and go to next point";
+        sendPhoto(image, AfterIodine);
+        putChlorine();
+        next();
+        break;
+
+    case Photo:
+        qDebug() << "Image captured, send it for save and go to next point";
+        sendPhoto(image, AfterChlorine);
+        next();
         break;
 
     case Stop:
     case Close:
         break;
     }
+}
+
+void Robot::sendPhoto(const QImage &image, PhotoType type)
+{
+    CellImage res;
+    res.img = image;
+    res.photoType = type;
+    emit result(res);
+    if ( _points->packDone() )
+        emit packDone();
+}
+
+void Robot::putIodine() const
+{
+    //    _cameraController->putIodine();
+}
+
+void Robot::putChlorine() const
+{
+    //    _cameraController->putChlorine();
+}
+
+void Robot::waitAfterIodine()
+{
+    _cameraController->goHome();
+    QSettings settings("settings.ini", QSettings::IniFormat);
+    _chemicalWaiting.setInterval(settings.value("secWaitForIodine").toInt()*1000);
+    _chemicalWaiting.start();
+}
+
+void Robot::waitAfterChlorine()
+{
+    _cameraController->goHome();
+    QSettings settings("settings.ini", QSettings::IniFormat);
+    _chemicalWaiting.setInterval(settings.value("secWaitForChlorine").toInt()*1000);
+    _chemicalWaiting.start();
 }
 
 void Robot::packPresence(bool presence)
@@ -159,7 +231,7 @@ void Robot::packPresence(bool presence)
 void Robot::prepareToClose()
 {
     qDebug() << "Start preparing to close";
-    if ( _state == Start )
+    if ( _state != Stop )
         stop();
 
     if ( !_cameraController->isConnected() ){

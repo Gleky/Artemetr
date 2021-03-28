@@ -26,7 +26,7 @@ public slots:
     void stop();
 
 signals:
-    void result(CellResult);
+    void result(CellImage);
     void done();
     void packDone();
 
@@ -36,7 +36,7 @@ private slots:
     void packPresence( bool presence );
 
 private:
-    enum RobotState {Start, TableCheck, Stop, Close};
+    enum RobotState {TableCheck, PhotoAndIodine, PhotoAndChlorine, Photo, Stop, Close};
     RobotState _state = Stop;
 
     TablePoints *_points = new TablePoints;
@@ -47,6 +47,13 @@ private:
     CameraControl *const _cameraController;
     CameraWidget *const _cameraWidget;
     QTimer _delay;
+
+    void sendPhoto(const QImage &image, PhotoType type);
+    void putIodine() const;
+    void putChlorine() const;
+    void waitAfterIodine();
+    void waitAfterChlorine();
+    QTimer _chemicalWaiting;
 
     void runNn() const;
 };
