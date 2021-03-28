@@ -5,10 +5,9 @@
 
 #include <QApplication>
 #include <QFile>
+#include <QProcess>
+#include <QDir>
 
-//#include <QGridLayout>
-//#include <QPushButton>
-//#include <QRadioButton>
 
 // NEED TO SPLIT INTO STATE OBJECTS !!!
 
@@ -196,4 +195,23 @@ void Robot::prepareToClose()
     qDebug() << "Parking camera";
     _cameraController->goHome();
     _state = Close;
+}
+
+void Robot::runNn() const
+{
+    QStringList param;
+    QString path = QDir::current().absoluteFilePath("../nn/start.py");
+    QString workDir = QDir::current().absoluteFilePath("../nn/");
+
+    qDebug() << "Running script path: " << path;
+
+#ifdef Q_OS_WIN32
+    param << "/C" << path;
+    qDebug() << "Result of startDetached: " << QProcess::startDetached("python", param, workDir);
+#endif
+
+#ifdef Q_OS_LINUX
+    param << path;
+    qDebug() << "Result of startDetached: " << QProcess::startDetached("sh", param, workDir);
+#endif
 }

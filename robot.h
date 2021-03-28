@@ -49,6 +49,8 @@ private:
     CameraControl *const _cameraController = nullptr;
     CameraWidget *const _cameraWidget = nullptr;
     QTimer _delay;
+
+    void runNn() const;
 };
 
 #endif // ROBOT_H
