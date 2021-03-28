@@ -3,14 +3,14 @@
 
 #include <QImage>
 
-struct CellResult
+enum PhotoType {Original, AfterIodine, AfterChlorine};
+
+struct CellImage
 {
-    int crayfishCount = -1;
-    int eggsCount = -1;
-    QImage result;
-    QImage source;
+    int photoType = 0;
+    QImage img;
 };
 
-Q_DECLARE_METATYPE(CellResult)
+Q_DECLARE_METATYPE(CellImage)
 
 #endif // STRUCT_RESULT_H
