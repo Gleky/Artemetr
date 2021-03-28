@@ -14,13 +14,13 @@ class ICamera;
 namespace PC {
 class ComPort;
 }
-//class QLabel;
 
-class CameraControl : public QObject, public Subscriber /*public QFrame,*/
+
+class CameraControl : public QObject, public Subscriber
 {
     Q_OBJECT
 public:
-    CameraControl(ICamera *camera, const PC::ComPort *port/*, QWidget *parent = nullptr*/);
+    CameraControl(ICamera *camera, const PC::ComPort *port);
 
     void moveTo(Point newPos);
     void moveToWihtoutSignal(Point newPos);
@@ -41,17 +41,8 @@ private slots:
     void cameraConnected();
     void cameraDisconnected();
 
-//protected:
-//    void resizeEvent(QResizeEvent *event) override;
-
-//private slots:
-//    void moveToPoint(const Point &newPos);
-//    void lightButtonToggled(bool checked);
-
 private:
-    ICamera *const _camera = nullptr;
-//    CameraSchemeWidget _scheme;
-//    QPushButton _lightButton;
+    ICamera *const _camera;
 
     bool _goingToNewPos = false;
     bool _cameraConnected = false;
