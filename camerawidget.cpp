@@ -74,9 +74,9 @@ void CameraWidget::imageReady(int id, const QImage &image)
 }
 
 
-void CameraWidget::showResult(CellResult result)
+void CameraWidget::showResult(CellImage result)
 {
-    _resultLabel.setPixmap(QPixmap::fromImage(result.result).scaled(_resultLabel.size(),Qt::KeepAspectRatio));
+    _resultLabel.setPixmap(QPixmap::fromImage(result.img).scaled(_resultLabel.size(),Qt::KeepAspectRatio));
     _resultLabel.show();
     _viewfinder.hide();
 
