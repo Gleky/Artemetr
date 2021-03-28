@@ -17,7 +17,7 @@ ResultSaver::ResultSaver(const QString &folderName)
 
 void ResultSaver::saveResult(CellImage result)
 {
-//#ifndef TEST
+#ifndef TEST
     auto fileName = QDateTime::currentDateTime().toString("yyyy.MM.dd hh-mm-ss");
     QString subdir;
     if ( result.photoType == Original ) subdir = _subdirOriginal;
@@ -26,7 +26,7 @@ void ResultSaver::saveResult(CellImage result)
     subdir += '/';
 
     result.img.save(_savePath+subdir+fileName+".jpg", "JPEG", 100);
-//#endif
+#endif
 }
 
 void ResultSaver::savePackResultsText()
