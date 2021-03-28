@@ -13,6 +13,7 @@ public:
     bool hasNextCheckPoint() const;
     const Point nextCheckPoint() const;
     void currentCheckIs( bool checkResult );
+    void restartTargetPoints();
 
     bool hasNextTargetPoint() const;
     Point nextTargetPoint();

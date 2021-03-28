@@ -5,9 +5,8 @@
 QList<Point> getPackList();
 
 TablePoints::TablePoints()
-{
-    _packsForCheck = getPackList();
-}
+    : _packsForCheck(getPackList())
+{}
 
 bool TablePoints::hasNextCheckPoint() const
 {
@@ -52,14 +51,20 @@ void TablePoints::currentCheckIs(bool checkResult)
         getTargetPoints();
 }
 
+void TablePoints::restartTargetPoints()
+{
+    _targetPoints.clear();
+    getTargetPoints();
+}
+
 QList<Point> verticalPackTargetPoints(Point packPosition, bool rightToLeftDirection);
 QList<Point> horizontalPackTargetPoints(Point packPosition);
 
 void TablePoints::getTargetPoints()
 {
-    while ( !_packList.isEmpty() )
+    for ( int i = _packList.size()-1; i >= 0; --i )
     {
-        auto currentPackPosition = _packList.takeLast();
+        auto currentPackPosition = _packList.at(i);
         bool rightToLeft = currentPackPosition.Y % 2;
 
         if (false)
