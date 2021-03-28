@@ -1,10 +1,10 @@
 #ifndef ROBOT_H
 #define ROBOT_H
 
-//#include "irobot.h"
 #include "cameracontrol.h"
 #include "imageanalyzer.h"
 #include "tablepoints.h"
+#include "struct_result.h"
 
 #include <QTimer>
 
@@ -19,7 +19,6 @@ public:
     Robot(CameraControl *camera,CameraWidget *cameraWidget);
     ~Robot();
 
-//    QLayout battonsLayout();
     void prepareToClose();
 
 public slots:
@@ -35,7 +34,6 @@ private slots:
     void cameraAtTargetPoint();
     void imageCaptured(int id, const QImage &image);
     void packPresence( bool presence );
-    void resultReady(CellResult res);
 
 private:
     enum RobotState {Start, TableCheck, Stop, Close};
@@ -46,8 +44,8 @@ private:
 
     ImageAnalyzer _imageAnalyzer;
 
-    CameraControl *const _cameraController = nullptr;
-    CameraWidget *const _cameraWidget = nullptr;
+    CameraControl *const _cameraController;
+    CameraWidget *const _cameraWidget;
     QTimer _delay;
 
     void runNn() const;

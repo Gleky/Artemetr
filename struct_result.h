@@ -11,4 +11,6 @@ struct CellResult
     QImage source;
 };
 
+Q_DECLARE_METATYPE(CellResult)
+
 #endif // STRUCT_RESULT_H

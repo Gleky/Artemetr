@@ -15,7 +15,6 @@ Robot::Robot(CameraControl *camera, CameraWidget *cameraWidget)
     :_cameraController(camera),
       _cameraWidget(cameraWidget)
 {
-    connect(&_imageAnalyzer, &ImageAnalyzer::resultReady, this, &Robot::resultReady, Qt::QueuedConnection);
     connect(&_imageAnalyzer, &ImageAnalyzer::packPresence, this, &Robot::packPresence, Qt::QueuedConnection);
 #ifndef TEST
     _delay.setInterval(1000);
@@ -33,17 +32,6 @@ Robot::Robot(CameraControl *camera, CameraWidget *cameraWidget)
 
 Robot::~Robot()
 {}
-
-//QLayout Robot::battonsLayout()
-//{
-//    // need new class for this
-
-//    auto layout = new QGridLayout;
-//    auto startButton = new QPushButton("Start");
-//    auto stopButton = new QPushButton("Stop");
-//    auto crayfishModeButton = new QRadioButton("Crayfish");
-//    auto eggsModeButton = new QRadioButton("Eggs");
-//}
 
 void Robot::start()
 {
@@ -135,15 +123,24 @@ void Robot::cameraAtTargetPoint()
 void Robot::imageCaptured(int id, const QImage &image)
 {
     Q_UNUSED(id)
-    qDebug() << "Image captured, send it to analyzer";
 
     switch(_state)
     {
     case Start:
-        _imageAnalyzer.getResult(image);
+    {
+        qDebug() << "Image captured, send it for save and go to next point";
+        CellResult res;
+        res.source = image;
+        res.result = image;
+        emit result(res);
+        if ( _points->packDone() )
+            emit packDone();
+        next();
+    }
         break;
 
     case TableCheck:
+        qDebug() << "Image captured, send it to analyzer";
         _imageAnalyzer.checkPackPresence(image);
         break;
 
@@ -151,34 +148,12 @@ void Robot::imageCaptured(int id, const QImage &image)
     case Close:
         break;
     }
-
 }
 
 void Robot::packPresence(bool presence)
 {
     _points->currentCheckIs(presence);
     next();
-}
-
-void Robot::resultReady(CellResult res)
-{
-    qDebug() << "Result received, send it for save and go to next point";
-    emit result(res);
-
-    if ( _points->packDone() )
-        emit packDone();
-
-    switch(_state)
-    {
-    case Start:
-        next();
-        break;
-
-    case TableCheck:
-    case Stop:
-    case Close:
-        break;
-    }
 }
 
 void Robot::prepareToClose()
