@@ -157,9 +157,7 @@ void updateArduinoFirmware(QSerialPort *port,bool &needUpdate)
     const auto firmwareDir = QDir::currentPath() + hwfwDir;
 
     const QString avrDudePath = firmwareDir + "avrdude.exe";
-    QStringList arguments = {"-p m328p", "-c arduino", "-b 57600", "-U flash:w:"+loadedFwName};
     QString portNumber = port->portName();
-    arguments << "-P "+portNumber;
 
     auto newFirmwarePath = firmwareDir + newFwName;
     auto firmwarePath = firmwareDir + loadedFwName;
@@ -167,13 +165,12 @@ void updateArduinoFirmware(QSerialPort *port,bool &needUpdate)
     QFile::rename(firmwarePath, tempFirmwarePath);
     QFile::rename(newFirmwarePath, firmwarePath);
 
-    bool res = QProcess::execute(avrDudePath);
-    if (res) {
-        needUpdate = false;
-        QFile::remove(tempFirmwarePath);
-    }
-    else {
-        QFile::rename(firmwarePath, newFirmwarePath);
-        QFile::rename(tempFirmwarePath, firmwarePath);
-    }
+    QProcess avr;
+    avr.setProgram("cmd");
+    avr.setWorkingDirectory(firmwareDir);
+    avr.setArguments(QStringList()<<"/C "+avrDudePath+" -pm328p -carduino -b57600 -Uflash:w:"+loadedFwName+" -P"+portNumber);
+    avr.start();
+    avr.waitForFinished();
+    needUpdate = false;
+    QFile::remove(tempFirmwarePath);
 }
