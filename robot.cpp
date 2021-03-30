@@ -198,12 +198,18 @@ void Robot::sendPhoto(const QImage &image, PhotoType type)
 
 void Robot::putIodine() const
 {
-    //    _cameraController->putIodine();
+    QSettings settings("settings.ini", QSettings::IniFormat);
+    auto workTime = settings.value("msecIodinePumpWork").toInt();
+    auto afterWorkTime = settings.value("msecWaitAfterPumpWork").toInt();
+    _cameraController->putIodine(workTime, afterWorkTime);
 }
 
 void Robot::putChlorine() const
 {
-    //    _cameraController->putChlorine();
+    QSettings settings("settings.ini", QSettings::IniFormat);
+    auto workTime = settings.value("msecClorinePumpWork").toInt();
+    auto afterWorkTime = settings.value("msecWaitAfterPumpWork").toInt();
+    _cameraController->putChlorine(workTime, afterWorkTime);
 }
 
 void Robot::waitAfterIodine()

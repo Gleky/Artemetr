@@ -20,12 +20,15 @@ class CameraControl : public QObject, public Subscriber
 {
     Q_OBJECT
 public:
-    CameraControl(ICamera *camera, const PC::ComPort *port);
+    CameraControl(ICamera *camera, PC::ComPort *port);
 
     void moveTo(Point newPos);
     void moveToWihtoutSignal(Point newPos);
     void goHome();
     void lightOn();
+
+    void putIodine(int workTime, int afterWorkTime);
+    void putChlorine(int workTime, int afterWorkTime);
 
     void publisherUpdated() override;
 
@@ -43,6 +46,7 @@ private slots:
 
 private:
     ICamera *const _camera;
+    PC::ComPort *const _port;
 
     bool _goingToNewPos = false;
     bool _cameraConnected = false;

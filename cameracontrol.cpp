@@ -4,8 +4,9 @@
 
 #include <keywords.h>
 
-CameraControl::CameraControl(ICamera *camera, const PC::ComPort *port)
-    :_camera(camera)
+CameraControl::CameraControl(ICamera *camera, PC::ComPort *port)
+    : _camera(camera),
+      _port(port)
 {
     connect(port, &PC::ComPort::connected, this, &CameraControl::cameraConnected);
     connect(port, &PC::ComPort::disconnected, this, &CameraControl::cameraDisconnected);
@@ -42,6 +43,28 @@ void CameraControl::lightOn()
     if ( !_cameraConnected )
         return;
     _camera->setBacklight(On);
+}
+
+void CameraControl::putIodine(int workTime, int afterWorkTime)
+{
+    char msg[commandSize];
+    *msg = iodinePumpSign;
+    int16_t *wt = reinterpret_cast<int16_t *>(msg+xPosIndex);
+    int16_t *awt = reinterpret_cast<int16_t *>(msg+yPosIndex);
+    *wt = static_cast<int16_t>(workTime);
+    *awt = static_cast<int16_t>(afterWorkTime);
+    _port->sendMessage(msg);
+}
+
+void CameraControl::putChlorine(int workTime, int afterWorkTime)
+{
+    char msg[commandSize];
+    *msg = chlorinePumpSign;
+    int16_t *wt = reinterpret_cast<int16_t *>(msg+xPosIndex);
+    int16_t *awt = reinterpret_cast<int16_t *>(msg+yPosIndex);
+    *wt = static_cast<int16_t>(workTime);
+    *awt = static_cast<int16_t>(afterWorkTime);
+    _port->sendMessage(msg);
 }
 
 void CameraControl::publisherUpdated()
