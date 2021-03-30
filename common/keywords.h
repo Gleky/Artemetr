@@ -34,6 +34,9 @@
 #define xPosIndex 1
 #define yPosIndex 3
 
+/////Pumps messages
+#define iodinePumpSign 'I'
+#define chlorinePumpSign 'H' 
 
 /////Backlight messages
 #define setBacklightState 'L'
