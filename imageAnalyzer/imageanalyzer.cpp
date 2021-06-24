@@ -44,7 +44,7 @@ void ImageAnalyzer::checkPresence(QImage img)
     if ( darkness > minDarkPart ) presence = true;
 #else
     static int count = 0;
-    if (count < 2) presence = true;
+    if (count < 1) presence = true;
     ++count;
 #endif
     emit packPresence( presence );
