@@ -18,9 +18,8 @@ TEMPLATE = app
 # deprecated API in order to know how to port your code away from it.
 DEFINES += QT_DEPRECATED_WARNINGS
 
-CONFIG(debug, debug|release) {
-  DEFINES += TEST
-}
+#DEFINES += TEST
+#DEFINES += TEST_WITH_ARDUINO
 
 # You can also make your code fail to compile if you use deprecated APIs.
 # In order to do so, uncomment the following line.

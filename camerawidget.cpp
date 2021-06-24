@@ -25,7 +25,7 @@ CameraWidget::CameraWidget(QWidget *parent)
 
         for ( auto res : resolutions)
         {
-#ifdef TEST
+#if defined (TEST) || defined (TEST_WITH_ARDUINO)
             if ( res.height() == 720 && res.width() == 1280)
 #else
             if ( res.height() == 960 && res.width() == 1280)

@@ -17,10 +17,10 @@ Robot::Robot(CameraControl *camera, CameraWidget *cameraWidget)
       _cameraWidget(cameraWidget)
 {
     connect(&_imageAnalyzer, &ImageAnalyzer::packPresence, this, &Robot::packPresence, Qt::QueuedConnection);
-#ifndef TEST
-    _delay.setInterval(1000);
-#else
+#if defined (TEST) || defined (TEST_WITH_ARDUINO)
     _delay.setInterval(300);
+#else
+    _delay.setInterval(1000);
 #endif
     _delay.setSingleShot(true);
 
