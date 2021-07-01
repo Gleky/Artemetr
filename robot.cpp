@@ -31,6 +31,7 @@ Robot::Robot(CameraControl *camera, CameraWidget *cameraWidget)
     connect(this, &Robot::result, _cameraWidget, &CameraWidget::showResult, Qt::QueuedConnection);
 
     _chemicalWaiting.setSingleShot(true);
+    connect(&_chemicalWaiting, &QTimer::timeout, _cameraController, &CameraControl::lightOn);
     connect(&_chemicalWaiting, &QTimer::timeout, this, &Robot::next, Qt::QueuedConnection);
 }
 
