@@ -24,8 +24,8 @@ Robot::Robot(CameraControl *camera, CameraWidget *cameraWidget)
 #endif
     _delay.setSingleShot(true);
 
-    connect(_cameraController, &CameraControl::cameraReachedTargetPoint, &_delay, qOverload<>(&QTimer::start), Qt::QueuedConnection);
-    connect(&_delay, &QTimer::timeout, this, &Robot::cameraAtTargetPoint, Qt::QueuedConnection);
+    connect(_cameraController, &CameraControl::cameraReachedTargetPoint, &_delay, qOverload<>(&QTimer::start));
+    connect(&_delay, &QTimer::timeout, this, &Robot::cameraAtTargetPoint);
 
     connect(cameraWidget, &CameraWidget::imageCaptured, this, &Robot::imageCaptured);
     connect(this, &Robot::result, _cameraWidget, &CameraWidget::showResult, Qt::QueuedConnection);
