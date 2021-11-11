@@ -45,6 +45,13 @@ void CameraControl::lightOn()
     _camera->setBacklight(On);
 }
 
+void CameraControl::lightOff()
+{
+    if ( !_cameraConnected )
+        return;
+    _camera->setBacklight(Off);
+}
+
 void CameraControl::putIodine(int workTime, int afterWorkTime)
 {
     char msg[commandSize];

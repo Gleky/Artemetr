@@ -26,6 +26,7 @@ public:
     void moveToWihtoutSignal(Point newPos);
     void goHome();
     void lightOn();
+    void lightOff();
 
     void putIodine(int workTime, int afterWorkTime);
     void putChlorine(int workTime, int afterWorkTime);

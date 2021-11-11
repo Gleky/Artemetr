@@ -84,7 +84,9 @@ void Robot::next()
             _cameraController->moveTo( _points->nextCheckPoint() );
         else
         {
-            _state = PhotoAndIodine;
+//            _state = PhotoAndIodine;
+            _state = Photo;                //1 loop
+            _cameraController->lightOff(); //without light
             next();
         }
         break;
@@ -224,6 +226,7 @@ void Robot::waitAfterIodine()
 void Robot::waitAfterChlorine()
 {
     _cameraController->goHome();
+    disconnect(&_chemicalWaiting, &QTimer::timeout, _cameraController, &CameraControl::lightOn);
     QSettings settings("settings.ini", QSettings::IniFormat);
     _chemicalWaiting.setInterval(settings.value("secWaitForChlorine").toInt()*1000);
     _chemicalWaiting.start();
