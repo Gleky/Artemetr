@@ -86,7 +86,7 @@ void Robot::next()
         {
 //            _state = PhotoAndIodine;
             _state = Photo;                //1 loop
-            _cameraController->lightOff(); //without light
+//            _cameraController->lightOff(); //without light
             next();
         }
         break;
